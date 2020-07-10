@@ -1,0 +1,29 @@
+{
+  "name": "unicode-emoji-picker",
+  "version": "1.0.0",
+  "description": "Customizable emoji picker web component, based on the Unicode Emoji specification",
+  "homepage": "https://github.com/julien-marcou/unicode-emoji-picker#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/julien-marcou/unicode-emoji-picker"
+  },
+  "keywords": [
+    "unicode",
+    "emoji",
+    "picker",
+    "selector",
+    "smiley",
+    "emoticon",
+    "emojis",
+    "smileys",
+    "emoticons",
+    "web-component"
+  ],
+  "main": "index.js",
+  "type": "module",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "scrollable-component": "^1.0.1",
+    "unicode-emoji": "^2.0.3"
+  }
+}
