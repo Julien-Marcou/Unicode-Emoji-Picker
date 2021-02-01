@@ -21,7 +21,7 @@
   ],
   "main": "index.js",
   "type": "module",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "dependencies": {
     "scrollable-component": "^1.0.1",
     "unicode-emoji": "^2.0.3"
