@@ -11,6 +11,7 @@ If you have already used Slack, it's quite similar
 
 ![Unicode Emoji Picker - Default theme](https://emoji.julien-marcou.fr/unicode-emoji-picker-light.png)
 
+
 ## Installation
 
 ```shell
@@ -35,7 +36,6 @@ import { EmojiPickerElement } from 'unicode-emoji-picker';
 ```
 
 ### JavaScript
-
 
 If you are not using Webpack, you'll need to use [Import Maps](https://wicg.github.io/import-maps/) (which are not implemented in any browser yet) with a polyfill, so the dependencies can be properly loaded
 
@@ -82,6 +82,7 @@ emojiPicker.addEventListener('emoji-pick', (event) => {
 });
 ```
 
+
 ## Browser compatibility
 
 Firefox & all Chromium-based browsers (Chrome, Edge, Safari, Opera, ...)
@@ -95,10 +96,10 @@ You can display the filters bar on every side of the Unicode Emoji Picker by set
 <unicode-emoji-picker filters-position="bottom"></unicode-emoji-picker>
 ```
 
-You can choose the version of the `Unicode Emoji` specification to use by setting the `version` attribute to one of these values : `0.6`, `0.7`, `1.0`, `2.0`, `3.0`, `4.0`, `5.0`, `11.0`, `12.0`, `12.1` or `13.0` (default to `12.0` as newer versions are currently not widely supported)
+You can choose the version of the `Unicode Emoji` specification to use by setting the `version` attribute to one of these values : `0.6`, `0.7`, `1.0`, `2.0`, `3.0`, `4.0`, `5.0`, `11.0`, `12.0`, `12.1`, `13.0` or `13.1` (default to `12.0` as newer versions are currently not widely supported)
 
 ```html
-<unicode-emoji-picker version="13.0"></unicode-emoji-picker>
+<unicode-emoji-picker version="13.1"></unicode-emoji-picker>
 ```
 
 You can choose which group will be selected by default by setting the `default-group` attribute to one of these values : `search`, `face-emotion`, `food-drink`, `animals-nature`, `activities-events`, `person-people`, `travel-places`, `objects`, `symbols` or `flags` (default to `face-emotion`)
@@ -221,9 +222,9 @@ const emojiPicker = document.querySelector('unicode-emoji-picker');
 window.customElements.whenDefined('unicode-emoji-picker').then(() => {
     emojiPicker.setTranslation({
         'search': {
-          emoji: '🔎',
-          title: 'Search an Emoji',
-          inputPlaceholder: 'Search an Emoji...',
+            emoji: '🔎',
+            title: 'Search an Emoji',
+            inputPlaceholder: 'Search an Emoji...',
         },
         'face-emotion': {
             emoji: '😀️',

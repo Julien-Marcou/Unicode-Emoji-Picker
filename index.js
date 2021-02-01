@@ -2,7 +2,7 @@ import 'scrollable-component';
 import * as unicodeEmoji from 'unicode-emoji';
 
 const defaultVersion = '12.0';
-const versions = ['0.6', '0.7', '1.0', '2.0', '3.0', '4.0', '5.0', '11.0', '12.0', '12.1', '13.0'];
+const versions = ['0.6', '0.7', '1.0', '2.0', '3.0', '4.0', '5.0', '11.0', '12.0', '12.1', '13.0', '13.1'];
 
 const emojiPickerTemplate = document.createElement('template');
 emojiPickerTemplate.innerHTML = `
