@@ -1,6 +1,6 @@
 # Unicode Emoji Picker
 
-Unicode Emoji Picker is a custom element (Web Component) which allow you to pick an Emoji from the `Unicode Emoji` specification
+Unicode Emoji Picker is a custom element (Web Component) that allows you to pick an Emoji from the `Unicode Emoji` specification
 
 If you have already used Slack, it's quite similar
 
@@ -9,7 +9,7 @@ If you have already used Slack, it's quite similar
 
 [Check out the demo](https://emoji.julien-marcou.fr/)
 
-![Unicode Emoji Picker - Default theme](https://emoji.julien-marcou.fr/unicode-emoji-picker-light.png)
+![Unicode Emoji Picker - Default theme](https://raw.githubusercontent.com/Julien-Marcou/unicode-emoji-picker-demo/main/unicode-emoji-picker-light.png)
 
 
 ## Installation
@@ -85,7 +85,7 @@ emojiPicker.addEventListener('emoji-pick', (event) => {
 
 ## Browser compatibility
 
-Firefox & all Chromium-based browsers (Chrome, Edge, Safari, Opera, ...)
+Firefox, Chromium-based browsers (Chrome, Edge, Opera, ...) & WebKit-based browser (Safari, ...)
 
 
 ## Customization
@@ -193,7 +193,7 @@ unicode-emoji-picker {
 }
 ```
 
-![Unicode Emoji Picker - Dark theme](https://emoji.julien-marcou.fr/unicode-emoji-picker-dark.png)
+![Unicode Emoji Picker - Dark theme](https://raw.githubusercontent.com/Julien-Marcou/unicode-emoji-picker-demo/main/unicode-emoji-picker-dark.png)
 
 
 ## JavaScript API
@@ -212,7 +212,7 @@ window.customElements.whenDefined('unicode-emoji-picker').then(() => {
 
 ## Translation
 
-You can translate (or change the text to whatever you want) using the `setTranslation()` method after the custom `<unicode-emoji-picker>` element has been defined
+You can translate the labels (or change them to whatever you want) using the `setTranslation()` method after the custom `<unicode-emoji-picker>` element has been defined
 
 Unfortunately you can't translate emojis' description & keywords yet
 
