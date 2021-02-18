@@ -56,3 +56,9 @@ export class EmojiPickerElement extends HTMLElement {
   public addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
   public addEventListener(type: 'emoji-pick', listener: (event: EmojiPickEvent) => void, options?: boolean | AddEventListenerOptions): void;
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'unicode-emoji-picker': EmojiPickerElement;
+  }
+}
