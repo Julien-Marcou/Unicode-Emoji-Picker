@@ -1,8 +1,19 @@
 # Unicode Emoji Picker
 
+[![NPM Package](https://img.shields.io/npm/v/unicode-emoji-picker?label=release&color=%23cd2620&logo=npm)](https://www.npmjs.com/package/unicode-emoji-picker)
+[![Unicode Emoji v13.1](https://img.shields.io/badge/emoji-v13.1-yellow?logo=unicode&logoColor=yellow)](https://unicode.org/Public/emoji/13.1/)
+[![GitHub Repository](https://img.shields.io/github/stars/Julien-Marcou/Unicode-Emoji-Picker?color=%23f5f5f5&logo=github)](https://github.com/Julien-Marcou/Unicode-Emoji-Picker)
+
+![Downloads per Month](https://img.shields.io/npm/dm/unicode-emoji-picker)
+![Gzip Size](https://img.shields.io/bundlephobia/minzip/unicode-emoji-picker?label=gzip%20size)
+![Dependencies Status](https://img.shields.io/david/Julien-Marcou/Unicode-Emoji-Picker)
+![MIT License](https://img.shields.io/npm/l/unicode-emoji-picker)
+
 Unicode Emoji Picker is a custom element (Web Component) that allows you to pick an Emoji from the `Unicode Emoji` specification
 
-If you have already used Slack, it's quite similar
+```html
+<unicode-emoji-picker></unicode-emoji-picker>
+```
 
 
 ## Demo
@@ -29,7 +40,7 @@ As it is a self-defined custom element, you must import it in your main entry fi
 import 'unicode-emoji-picker';
 ```
 
-In addition to the previous import, if you want to extend or use the typing of the EmojiPickerElement, you can import it where you need it
+In addition to the previous import, if you want to extend or use the typing of the `EmojiPickerElement`, you can import it where you need it
 
 ```javascript
 import { EmojiPickerElement } from 'unicode-emoji-picker';
@@ -58,7 +69,7 @@ Then you will be able to import it in your HTML using a `module-shim` script
 <script type="module-shim" src="/path-to-node-modules/unicode-emoji-picker/index.js"></script>
 ```
 
-Or, import it in your JavaScript
+Or import it in your JavaScript
 
 ```javascript
 import 'unicode-emoji-picker';
@@ -67,7 +78,7 @@ import 'unicode-emoji-picker';
 
 ## Usage
 
-The EmojiPickerElement is displayed by default, if you want to place it relative to another HTML element or display/hide it, it's all up to you
+The `EmojiPickerElement` is displayed by default, if you want to place it relative to another HTML element or display/hide it, it's all up to you
 
 ```html
 <unicode-emoji-picker></unicode-emoji-picker>
@@ -85,7 +96,7 @@ emojiPicker.addEventListener('emoji-pick', (event) => {
 
 ## Browser compatibility
 
-Firefox, Chromium-based browsers (Chrome, Edge, Opera, ...) & WebKit-based browser (Safari, ...)
+Firefox, Chromium-based browsers (Chrome, Edge, Opera, ...) & WebKit-based browsers (Safari, ...)
 
 
 ## Customization
@@ -214,7 +225,7 @@ window.customElements.whenDefined('unicode-emoji-picker').then(() => {
 
 You can translate the labels (or change them to whatever you want) using the `setTranslation()` method after the custom `<unicode-emoji-picker>` element has been defined
 
-Unfortunately you can't translate emojis' description & keywords yet
+Unfortunately, you can't translate emojis' description & keywords yet
 
 ```javascript
 const emojiPicker = document.querySelector('unicode-emoji-picker');
