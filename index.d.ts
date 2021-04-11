@@ -48,13 +48,16 @@ export type EmojiPickerTranslation = {
 
 export type EmojiPickEvent = CustomEvent<Emoji>;
 
+export interface EmojiPickerEventMap extends HTMLElementEventMap {
+  'emoji-pick': EmojiPickEvent;
+}
+
 export class EmojiPickerElement extends HTMLElement {
   public selectGroup(groupKey: EmojiGroupKey): void;
   public searchEmoji(query: string): void;
   public setTranslation(translation: EmojiPickerTranslation): void;
-  public addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLEmbedElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-  public addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-  public addEventListener(type: 'emoji-pick', listener: (event: EmojiPickEvent) => void, options?: boolean | AddEventListenerOptions): void;
+  public addEventListener<K extends keyof EmojiPickerEventMap>(type: K, listener: (this: EmojiPickerElement, ev: EmojiPickerEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+  public removeEventListener<K extends keyof EmojiPickerEventMap>(type: K, listener: (this: EmojiPickerElement, ev: EmojiPickerEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
 }
 
 declare global {
