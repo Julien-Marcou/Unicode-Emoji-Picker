@@ -24,7 +24,7 @@
   "type": "module",
   "license": "MIT",
   "dependencies": {
-    "scrollable-component": "^1.1.1",
-    "unicode-emoji": "^2.1.1"
+    "scrollable-component": "^1.1.2",
+    "unicode-emoji": "^2.2.0"
   }
 }
