@@ -566,7 +566,7 @@ export class EmojiPickerElement extends HTMLElement {
 
   attributeChangedCallback(attributeName, oldValue, newValue) {
     if (attributeName === 'version') {
-      this.emojis = unicodeEmoji.getEmojisGroupedBy('category', {versionAbove: version});
+      this.emojis = unicodeEmoji.getEmojisGroupedBy('category', {versionAbove: newValue});
       this.buildEmojis();
     }
   }
