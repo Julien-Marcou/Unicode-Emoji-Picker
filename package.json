@@ -25,6 +25,6 @@
   "license": "MIT",
   "dependencies": {
     "scrollable-component": "^1.1.2",
-    "unicode-emoji": "^2.2.0"
+    "unicode-emoji": "^2.2.1"
   }
 }
