@@ -416,6 +416,7 @@ emojiTemplate.innerHTML = `
 `;
 
 export class EmojiPickerElement extends HTMLElement {
+
   static get observedAttributes() {
     return ['version'];
   }
@@ -674,10 +675,7 @@ export class EmojiPickerElement extends HTMLElement {
 
     // Reset search
     if (this.activeGroup === this.searchGroup) {
-      this.searchInputElement.value = '';
-      for (const [baseEmoji, baseEmojiElement] of this.baseEmojiElements) {
-        baseEmojiElement.classList.remove('hidden');
-      }
+      this.clearSearch();
     }
 
     // Switch active state
@@ -762,6 +760,13 @@ export class EmojiPickerElement extends HTMLElement {
       else {
         baseEmojiElement.classList.add('hidden');
       }
+    }
+  }
+
+  clearSearch() {
+    this.searchInputElement.value = '';
+    for (const [baseEmoji, baseEmojiElement] of this.baseEmojiElements) {
+      baseEmojiElement.classList.remove('hidden');
     }
   }
 

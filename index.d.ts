@@ -56,6 +56,7 @@ export class EmojiPickerElement extends HTMLElement {
   public readonly selectedGroup: EmojiGroupKey;
   public selectGroup(groupKey: EmojiGroupKey): void;
   public searchEmoji(query: string): void;
+  public clearSearch(): void;
   public setTranslation(translation: EmojiPickerTranslation): void;
   public addEventListener<K extends keyof EmojiPickerEventMap>(type: K, listener: (this: EmojiPickerElement, ev: EmojiPickerEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
   public removeEventListener<K extends keyof EmojiPickerEventMap>(type: K, listener: (this: EmojiPickerElement, ev: EmojiPickerEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
