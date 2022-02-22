@@ -644,7 +644,7 @@ export class EmojiPickerElement extends HTMLElement {
           group.emoji = translation[groupKey].emoji;
           groupFilterElement.querySelector('.button').innerHTML = group.emoji;
         }
-        if (translation[groupKey].emoji) {
+        if (translation[groupKey].title) {
           group.title = translation[groupKey].title;
           groupFilterElement.querySelector('.button').setAttribute('title', group.title);
         }
