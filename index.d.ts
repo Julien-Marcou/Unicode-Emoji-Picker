@@ -53,6 +53,7 @@ export interface EmojiPickerEventMap extends HTMLElementEventMap {
 }
 
 export class EmojiPickerElement extends HTMLElement {
+  public readonly selectedGroup: EmojiGroupKey;
   public selectGroup(groupKey: EmojiGroupKey): void;
   public searchEmoji(query: string): void;
   public setTranslation(translation: EmojiPickerTranslation): void;

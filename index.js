@@ -420,6 +420,14 @@ export class EmojiPickerElement extends HTMLElement {
     return ['version'];
   }
 
+  get selectedGroup() {
+    for ([key, group] of this.groups) {
+      if (group === this.activeGroup) {
+        return key;
+      }
+    }
+  }
+
   constructor() {
     super();
     this.groups = new Map([
