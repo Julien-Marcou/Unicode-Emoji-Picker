@@ -6,7 +6,6 @@
 
 ![Downloads per Month](https://img.shields.io/npm/dm/unicode-emoji-picker)
 ![Gzip Size](https://img.shields.io/bundlephobia/minzip/unicode-emoji-picker?label=gzip%20size)
-![Dependencies Status](https://img.shields.io/david/Julien-Marcou/Unicode-Emoji-Picker)
 ![MIT License](https://img.shields.io/npm/l/unicode-emoji-picker)
 
 Unicode Emoji Picker is a custom element (Web Component) that allows you to pick an Emoji from the `Unicode Emoji` specification.
