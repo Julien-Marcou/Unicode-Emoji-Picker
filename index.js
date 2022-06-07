@@ -654,8 +654,8 @@ export class EmojiPickerElement extends HTMLElement {
         }
       }
     }
-    if (this.activeGroup) {
-      this.titleElement.innerHTML = this.activeGroup.title;
+    if (this.activeGroupKey) {
+      this.titleElement.innerHTML = this.groups.get(this.activeGroupKey).title;
     }
   }
 
@@ -664,7 +664,7 @@ export class EmojiPickerElement extends HTMLElement {
     if (this.activeBaseEmoji) {
       this.closeVariationsPanel();
     }
-    if (this.activeGroup) {
+    if (this.activeGroupKey) {
       this.contentElement.scrollTop = 0;
     }
 
