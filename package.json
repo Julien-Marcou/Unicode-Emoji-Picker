@@ -1,6 +1,6 @@
 {
   "name": "unicode-emoji-picker",
-  "version": "1.2.1",
+  "version": "2.0.0-next.0",
   "description": "Customizable emoji picker web component, based on the Unicode Emoji specification",
   "homepage": "https://emoji.julien-marcou.fr/",
   "repository": {
