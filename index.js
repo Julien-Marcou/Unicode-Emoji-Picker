@@ -867,6 +867,24 @@ export class EmojiPickerElement extends HTMLElement {
       this.contentElement.scrollTop += currentBottom - maxBottom;
     }
   }
+
+  focusHeader() {
+    this.groupFiltersElement.querySelector('button').focus();
+  }
+
+  focusContent(skipSearchInput = false) {
+    if (this.activeGroupKey === 'search') {
+      if (skipSearchInput) {
+        this.resultsElement.querySelector('button').focus();
+      }
+      else {
+        this.searchInputElement.focus();
+      }
+    }
+    else {
+      this.groupElements.get(this.activeGroupKey).querySelector('button').focus();
+    }
+  }
 }
 
 window.customElements.define('unicode-emoji-picker', EmojiPickerElement);

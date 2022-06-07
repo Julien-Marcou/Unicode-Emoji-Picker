@@ -60,6 +60,8 @@ export class EmojiPickerElement extends HTMLElement {
   public setTranslation(translation: EmojiPickerTranslation): void;
   public addEventListener<K extends keyof EmojiPickerEventMap>(type: K, listener: (this: EmojiPickerElement, ev: EmojiPickerEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
   public removeEventListener<K extends keyof EmojiPickerEventMap>(type: K, listener: (this: EmojiPickerElement, ev: EmojiPickerEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+  public focusHeader(): void;
+  public focusContent(skipSearchInput?: boolean): void;
 }
 
 declare global {
