@@ -422,11 +422,7 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   get selectedGroup() {
-    for ([key, group] of this.groups) {
-      if (group === this.activeGroup) {
-        return key;
-      }
-    }
+    return this.activeGroupKey;
   }
 
   constructor() {
@@ -503,8 +499,7 @@ export class EmojiPickerElement extends HTMLElement {
         },
       ],
     ]);
-    this.searchGroup = this.groups.get('search');
-    this.activeGroup = null;
+    this.activeGroupKey = null;
     this.emojis = null;
     this.activeBaseEmoji = null;
     this.baseEmojiVariationsGap = 4;
@@ -544,7 +539,7 @@ export class EmojiPickerElement extends HTMLElement {
       this.groupFiltersElement.appendChild(groupFilterContent);
 
       // Emoji groups
-      if (group !== this.searchGroup) {
+      if (groupKey !== 'search') {
         const groupContent = emojiGroupTemplate.content.cloneNode(true);
         const groupElement = groupContent.querySelector('.group');
         this.groupElements.set(group, groupElement);
@@ -585,7 +580,7 @@ export class EmojiPickerElement extends HTMLElement {
     this.baseEmojiElements = new Map();
     this.baseEmojiVariationsElements = new Map();
     for (const [groupKey, group] of this.groups) {
-      if (group !== this.searchGroup) {
+      if (groupKey !== 'search') {
         const groupElement = this.groupElements.get(group);
         groupElement.innerHTML = '';
         for (const baseEmoji of this.emojis[groupKey]) {
@@ -637,7 +632,7 @@ export class EmojiPickerElement extends HTMLElement {
         }
       }
     }
-    if (this.activeGroup === this.searchGroup) {
+    if (this.activeGroupKey === 'search') {
       this.searchEmoji(this.searchInputElement.value);
     }
   }
@@ -674,48 +669,48 @@ export class EmojiPickerElement extends HTMLElement {
     }
 
     // Reset search
-    if (this.activeGroup === this.searchGroup) {
+    if (this.activeGroupKey === 'search') {
       this.clearSearch();
     }
 
     // Switch active state
-    const group = this.groups.get(groupKey);
-    if (group !== this.activeGroup) {
+    if (groupKey !== this.activeGroupKey) {
 
       // Reset previous group filter
-      if (this.activeGroup) {
-        this.groupFilterElements.get(this.activeGroup).classList.remove('active');
-        if (this.activeGroup === this.searchGroup) {
-          for (const [group, groupElement] of this.groupElements) {
+      if (this.activeGroupKey) {
+        const previousActiveGroup = this.groups.get(this.activeGroupKey);
+        this.groupFilterElements.get(previousActiveGroup).classList.remove('active');
+        if (this.activeGroupKey === 'search') {
+          for (const groupElement of this.groupElements.values()) {
             groupElement.classList.remove('active');
           }
         }
         else {
-          this.groupElements.get(this.activeGroup).classList.remove('active');
+          this.groupElements.get(previousActiveGroup).classList.remove('active');
         }
       }
 
       // Set new group filter
-      this.activeGroup = group;
-      this.titleElement.innerHTML = this.activeGroup.title;
-      this.groupFilterElements.get(this.activeGroup).classList.add('active');
-      if (this.activeGroup === this.searchGroup) {
+      this.activeGroupKey = groupKey;
+      const activeGroup = this.groups.get(this.activeGroupKey);
+      this.titleElement.innerHTML = activeGroup.title;
+      this.groupFilterElements.get(activeGroup).classList.add('active');
+      if (this.activeGroupKey === 'search') {
         this.titleElement.classList.add('hidden');
         this.searchInputElement.classList.remove('hidden');
-        this.searchInputElement.focus();
-        for (const [group, groupElement] of this.groupElements) {
+        for (const groupElement of this.groupElements.values()) {
           groupElement.classList.add('active');
         }
       }
       else {
         this.titleElement.classList.remove('hidden');
         this.searchInputElement.classList.add('hidden');
-        this.groupElements.get(this.activeGroup).classList.add('active');
+        this.groupElements.get(activeGroup).classList.add('active');
       }
     }
 
     // Focus search input if needed
-    if (group === this.searchGroup) {
+    if (this.activeGroupKey === 'search') {
       this.searchInputElement.focus();
     }
   }
