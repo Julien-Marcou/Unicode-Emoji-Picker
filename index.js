@@ -670,7 +670,7 @@ export class EmojiPickerElement extends HTMLElement {
       this.closeVariationsPanel();
     }
     if (this.activeGroup) {
-      this.contentElement.viewport.scrollTop = 0;
+      this.contentElement.scrollTop = 0;
     }
 
     // Reset search
@@ -752,7 +752,7 @@ export class EmojiPickerElement extends HTMLElement {
       this.searchInputElement.value = query;
     }
     const searchTerms = query.toLowerCase().split(' ');
-    this.contentElement.viewport.scrollTop = 0;
+    this.contentElement.scrollTop = 0;
     for (const [baseEmoji, baseEmojiElement] of this.baseEmojiElements) {
       if(this.emojiMatchTerms(baseEmoji, searchTerms)) {
         baseEmojiElement.classList.remove('hidden');
@@ -826,8 +826,8 @@ export class EmojiPickerElement extends HTMLElement {
       const currentBottom = currentTop + baseEmojiVariationsElement.offsetHeight;
       const targetTop = currentTop - baseEmojiVariationsElement.offsetHeight - this.baseEmojiVariationsGap;
       const targetBottom = currentBottom + baseEmoji.offsetHeight + this.baseEmojiVariationsGap;
-      const minTargetTop = this.contentElement.viewport.scrollTop + this.resultsElement.offsetTop;
-      const maxTargetBottom = this.contentElement.viewport.scrollTop + this.contentElement.viewport.offsetHeight;
+      const minTargetTop = this.contentElement.scrollTop + this.resultsElement.offsetTop;
+      const maxTargetBottom = this.contentElement.scrollTop + this.contentElement.offsetHeight;
       // Display the panel above the base emoji if it doesn't fit under without scrolling but does above
       if (targetBottom > maxTargetBottom && targetTop >= minTargetTop) {
         baseEmojiVariationsElement.style.top = `${- baseEmojiVariationsElement.offsetHeight - this.baseEmojiVariationsGap}px`;
@@ -844,17 +844,17 @@ export class EmojiPickerElement extends HTMLElement {
 
         // Scroll to make the maximum of the variations visible, if needed
         if (targetBottom > maxTargetBottom) {
-          const maxScrollOffset = baseEmoji.offsetTop - this.contentElement.viewport.scrollTop - this.scrollToEmojiViewportMargin;
+          const maxScrollOffset = baseEmoji.offsetTop - this.contentElement.scrollTop - this.scrollToEmojiViewportMargin;
           const targetScrollOffset = targetBottom - maxTargetBottom + this.scrollToEmojiViewportMargin;
-          this.contentElement.viewport.scrollTop += Math.min(maxScrollOffset, targetScrollOffset);
+          this.contentElement.scrollTop += Math.min(maxScrollOffset, targetScrollOffset);
         }
       }
     }
   }
 
   scrollToEmoji(baseEmojiElement, emojiElement) {
-    const minTop = this.contentElement.viewport.scrollTop + this.resultsElement.offsetTop + this.scrollToEmojiViewportMargin;
-    const maxBottom = this.contentElement.viewport.scrollTop + this.contentElement.viewport.offsetHeight - this.scrollToEmojiViewportMargin;
+    const minTop = this.contentElement.scrollTop + this.resultsElement.offsetTop + this.scrollToEmojiViewportMargin;
+    const maxBottom = this.contentElement.scrollTop + this.contentElement.offsetHeight - this.scrollToEmojiViewportMargin;
     let currentTop;
     let currentBottom;
     if (emojiElement) {
@@ -866,10 +866,10 @@ export class EmojiPickerElement extends HTMLElement {
       currentBottom = currentTop + baseEmojiElement.offsetHeight;
     }
     if (currentTop < minTop) {
-      this.contentElement.viewport.scrollTop += currentTop - minTop;
+      this.contentElement.scrollTop += currentTop - minTop;
     }
     else if (currentBottom > maxBottom) {
-      this.contentElement.viewport.scrollTop += currentBottom - maxBottom;
+      this.contentElement.scrollTop += currentBottom - maxBottom;
     }
   }
 }
