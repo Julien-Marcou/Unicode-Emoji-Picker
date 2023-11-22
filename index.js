@@ -34,6 +34,7 @@ emojiPickerTemplate.innerHTML = `
       --content-scrollbar-thumb-fill-color-hover: #aaa;
 
       --title-bar-fill-color: rgba(255, 255, 255, 0.95);
+      --title-bar-font-size: inherit;
       --search-input-padding: 0.35em 0.4em 0.55em;
       --search-input-border-width: 0 0 4px 0;
       --search-input-border-color: #e4e4e4;
@@ -233,7 +234,7 @@ emojiPickerTemplate.innerHTML = `
     }
     .title-bar .title {
       overflow: hidden;
-      font-size: 1.3em;
+      font-size: var(--title-bar-font-size, 1.3em);
       white-space: nowrap;
       text-overflow: ellipsis;
     }
