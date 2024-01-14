@@ -1,7 +1,7 @@
 # Unicode Emoji Picker
 
 [![NPM Package](https://img.shields.io/npm/v/unicode-emoji-picker?label=release&color=%23cd2620&logo=npm)](https://www.npmjs.com/package/unicode-emoji-picker)
-[![Unicode Emoji v15.0](https://img.shields.io/badge/emoji-v15.0-yellow?logo=unicode&logoColor=yellow)](https://unicode.org/Public/emoji/15.0/)
+[![Unicode Emoji v15.1](https://img.shields.io/badge/emoji-v15.1-yellow?logo=unicode&logoColor=yellow)](https://unicode.org/Public/emoji/15.1/)
 [![GitHub Repository](https://img.shields.io/github/stars/Julien-Marcou/Unicode-Emoji-Picker?color=%23f5f5f5&logo=github)](https://github.com/Julien-Marcou/Unicode-Emoji-Picker)
 
 ![Downloads per Month](https://img.shields.io/npm/dm/unicode-emoji-picker)
@@ -108,10 +108,10 @@ You can display the filters bar on every side of the Unicode Emoji Picker by set
 <unicode-emoji-picker filters-position="bottom"></unicode-emoji-picker>
 ```
 
-You can choose the version of the `Unicode Emoji` specification to use by setting the `version` attribute to one of these values : `0.6`, `0.7`, `1.0`, `2.0`, `3.0`, `4.0`, `5.0`, `11.0`, `12.0`, `12.1`, `13.0`, `13.1`, `14.0` or `15.0` (default to `12.0` as newer versions are currently not widely supported) :
+You can choose the version of the `Unicode Emoji` specification to use by setting the `version` attribute to one of these values : `0.6`, `0.7`, `1.0`, `2.0`, `3.0`, `4.0`, `5.0`, `11.0`, `12.0`, `12.1`, `13.0`, `13.1`, `14.0`, `15.0` or `15.1` (default to `12.0` as newer versions are currently not widely supported) :
 
 ```html
-<unicode-emoji-picker version="15.0"></unicode-emoji-picker>
+<unicode-emoji-picker version="15.1"></unicode-emoji-picker>
 ```
 
 You can choose which group will be selected by default by setting the `default-group` attribute to one of these values : `search`, `face-emotion`, `food-drink`, `animals-nature`, `activities-events`, `person-people`, `travel-places`, `objects`, `symbols` or `flags` (default to `face-emotion`)
@@ -143,13 +143,14 @@ unicode-emoji-picker {
   /* It also directly reflects the font-size for the emoji font */
   font-size: 24px;
 
-  /* Dimensions of the viewport (doesn't include the filters bar) */
-  --min-width: 15.3em; /* 6 emojis wide */
-  --min-height: 11.5em; /* 4 emojis tall */
-  --max-width: 23.95em; /* 11 emojis wide */
-  --max-height: 23.75em; /* 10 emojis tall */
+  /* Dimensions of the viewport */
+  --min-emoji-column: 6;
+  --max-emoji-column: 11;
+  --min-emoji-row: 4;
+  --max-emoji-row: 10;
 
   /* Global */
+  --outer-padding: 0.8em;
   --fill-color: #fff;
   --text-color: #111;
   --border-radius: 10px;
@@ -165,13 +166,22 @@ unicode-emoji-picker {
   --filter-border-radius: 8px;
   --filter-active-marker-border-width: 4px;
   --filter-active-marker-border-color: #aaa;
+  --filter-padding: 0.5em;
+  --filter-gap: 0.2em;
+  --filter-size: 2em;
 
   /* Content's viewport */
+  --content-scrollbar-width: 14px;
   --content-scrollbar-thumb-fill-color: #d7d7d7;
   --content-scrollbar-thumb-fill-color-hover: #aaa;
 
   /* Title/search bar */
   --title-bar-fill-color: rgba(255, 255, 255, 0.95);
+  --title-bar-height: 3em;
+  --title-bar-horizontal-padding: 1.1em;
+  --title-bar-font-size: 1.3em;
+  --search-input-font-size: 0.85em;
+  --search-input-line-height: 1.6em;
   --search-input-padding: 0.35em 0.4em 0.55em;
   --search-input-border-width: 0 0 4px 0;
   --search-input-border-color: #e4e4e4;
@@ -184,6 +194,9 @@ unicode-emoji-picker {
   --emoji-border-color: transparent;
   --emoji-border-color-hover: #d7d7d7;
   --emoji-border-radius: 8px;
+  --emoji-gap: 0.2em;
+  --emoji-size: 1.85em;
+  --emoji-font-size: 1em;
 
   /* Variations panel */
   --variations-backdrop-fill-color: rgba(255, 255, 255, 0.7);
