@@ -1,7 +1,7 @@
 # Unicode Emoji Picker
 
 [![NPM Package](https://img.shields.io/npm/v/unicode-emoji-picker?label=release&color=%23cd2620&logo=npm)](https://www.npmjs.com/package/unicode-emoji-picker)
-[![Unicode Emoji v15.0](https://img.shields.io/badge/emoji-v15.0-yellow?logo=unicode&logoColor=yellow)](https://unicode.org/Public/emoji/15.0/)
+[![Unicode Emoji v16.0](https://img.shields.io/badge/emoji-v16.0-yellow?logo=unicode&logoColor=yellow)](https://unicode.org/Public/emoji/16.0/)
 [![GitHub Repository](https://img.shields.io/github/stars/Julien-Marcou/Unicode-Emoji-Picker?color=%23f5f5f5&logo=github)](https://github.com/Julien-Marcou/Unicode-Emoji-Picker)
 
 ![Downloads per Month](https://img.shields.io/npm/dm/unicode-emoji-picker)
@@ -108,10 +108,10 @@ You can display the filters bar on every side of the Unicode Emoji Picker by set
 <unicode-emoji-picker filters-position="bottom"></unicode-emoji-picker>
 ```
 
-You can choose the version of the `Unicode Emoji` specification to use by setting the `version` attribute to one of these values : `0.6`, `0.7`, `1.0`, `2.0`, `3.0`, `4.0`, `5.0`, `11.0`, `12.0`, `12.1`, `13.0`, `13.1`, `14.0` or `15.0` (default to `12.0` as newer versions are currently not widely supported) :
+You can choose the version of the `Unicode Emoji` specification to use by setting the `version` attribute to one of these values : `0.6`, `0.7`, `1.0`, `2.0`, `3.0`, `4.0`, `5.0`, `11.0`, `12.0`, `12.1`, `13.0`, `13.1`, `14.0`, `15.0`, `15.1` or `16.0` (default to `12.0` as newer versions are currently not widely supported) :
 
 ```html
-<unicode-emoji-picker version="15.0"></unicode-emoji-picker>
+<unicode-emoji-picker version="16.0"></unicode-emoji-picker>
 ```
 
 You can choose which group will be selected by default by setting the `default-group` attribute to one of these values : `search`, `face-emotion`, `food-drink`, `animals-nature`, `activities-events`, `person-people`, `travel-places`, `objects`, `symbols` or `flags` (default to `face-emotion`)
