@@ -1,5 +1,8 @@
-# dependencies
+# Dependencies
 /node_modules
+
+# Generated file
+/index.js
 
 # IDEs and editors
 /.idea

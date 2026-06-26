@@ -20,6 +20,9 @@
     "custom-element",
     "web-component"
   ],
+  "scripts": {
+    "build": "node build.js"
+  },
   "main": "index.js",
   "type": "module",
   "license": "MIT",
