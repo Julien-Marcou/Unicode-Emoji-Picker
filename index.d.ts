@@ -64,6 +64,10 @@ export class EmojiPickerElement extends HTMLElement {
   public focusContent(skipSearchInput?: boolean): void;
 }
 
+export function defineUnicodeEmojiPicker(): void;
+export function isUnicodeEmojiPickerDefined(): boolean;
+export function whenUnicodeEmojiPickerDefined(): Promise<CustomElementConstructor>;
+
 declare global {
   interface HTMLElementTagNameMap {
     'unicode-emoji-picker': EmojiPickerElement;

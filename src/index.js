@@ -1,4 +1,4 @@
-import { defineScrollableComponent, isScrollableComponentDefined } from 'scrollable-component';
+import { defineScrollableComponent, isScrollableComponentDefined, whenScrollableComponentDefined } from 'scrollable-component';
 import { getEmojisGroupedBy } from 'unicode-emoji';
 
 const defaultVersion = '12.0';
@@ -510,7 +510,20 @@ export class EmojiPickerElement extends HTMLElement {
   }
 }
 
-window.customElements.define('unicode-emoji-picker', EmojiPickerElement);
-if (!isScrollableComponentDefined()) {
-  defineScrollableComponent();
+const defaultTag = 'unicode-emoji-picker';
+
+export function defineUnicodeEmojiPicker() {
+  if (!isScrollableComponentDefined()) {
+    defineScrollableComponent();
+  }
+  window.customElements.define(defaultTag, EmojiPickerElement);
+}
+
+export function isUnicodeEmojiPickerDefined() {
+  return isScrollableComponentDefined() && !!window.customElements.get(defaultTag);
+}
+
+export async function whenUnicodeEmojiPickerDefined() {
+  await whenScrollableComponentDefined();
+  return await window.customElements.whenDefined(defaultTag);
 }
