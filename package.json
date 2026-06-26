@@ -27,7 +27,7 @@
   "type": "module",
   "license": "MIT",
   "dependencies": {
-    "scrollable-component": "^2.0.0-next.0",
+    "scrollable-component": "^2.0.2",
     "unicode-emoji": "^2.7.0"
   }
 }

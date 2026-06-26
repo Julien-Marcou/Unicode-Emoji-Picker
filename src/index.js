@@ -1,5 +1,5 @@
-import 'scrollable-component';
-import * as unicodeEmoji from 'unicode-emoji';
+import { defineScrollableComponent, isScrollableComponentDefined } from 'scrollable-component';
+import { getEmojisGroupedBy } from 'unicode-emoji';
 
 const defaultVersion = '12.0';
 
@@ -193,7 +193,7 @@ export class EmojiPickerElement extends HTMLElement {
 
   attributeChangedCallback(attributeName, oldValue, newValue) {
     if (attributeName === 'version') {
-      this.emojis = unicodeEmoji.getEmojisGroupedBy('category', {versionAbove: newValue});
+      this.emojis = getEmojisGroupedBy('category', {versionAbove: newValue});
       this.buildEmojis();
     }
   }
@@ -511,3 +511,6 @@ export class EmojiPickerElement extends HTMLElement {
 }
 
 window.customElements.define('unicode-emoji-picker', EmojiPickerElement);
+if (!isScrollableComponentDefined()) {
+  defineScrollableComponent();
+}
