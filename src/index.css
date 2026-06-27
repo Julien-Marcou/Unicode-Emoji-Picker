@@ -276,16 +276,11 @@
 }
 
 /* Emojis */
-.base-emoji {
-  position: relative;
-}
-.base-emoji,
 .emoji {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.base-emoji > .button,
 .emoji > .button {
   display: block;
   overflow: hidden;
@@ -298,38 +293,41 @@
   text-align: center;
   transition: background-color var(--transition);
 }
-.base-emoji > .button:hover,
-.base-emoji > .button:focus,
 .emoji > .button:hover,
 .emoji > .button:focus {
   background-color: var(--emoji-fill-color-hover);
   border-color: var(--emoji-border-color-hover);
 }
-.base-emoji.hidden {
+.emoji.hidden {
   display: none;
 }
-.base-emoji.active {
+.emoji.active {
   z-index: 2;
 }
-.base-emoji.has-variations > .button {
+.emoji.has-variations {
+  position: relative;
+}
+.emoji.has-variations > .button {
   border-bottom-right-radius: 0;
 }
 
 /* Emoji variations marker */
-.base-emoji .variations-marker {
+.emoji.has-variations > .button:after {
+  box-sizing: border-box;
   pointer-events: none;
+  content: '';
   display: block;
   position: absolute;
-  left: calc(50% + 0.925em - var(--emoji-variation-marker-size));
-  top: calc(50% + 0.925em - var(--emoji-variation-marker-size));
+  bottom: 0;
+  right: 0;
   width: var(--emoji-variation-marker-size);
   height: var(--emoji-variation-marker-size);
   border: var(--emoji-variation-marker-border-width) solid var(--emoji-variation-marker-border-color);
   border-top: 0 none;
   border-left: 0 none;
 }
-.base-emoji > .button:hover + .variations-marker,
-.base-emoji > .button:focus + .variations-marker {
+.emoji.has-variations > .button:hover:after,
+.emoji.has-variations > .button:focus:after {
   border-color: var(--emoji-variation-marker-border-color-hover);
 }
 
@@ -347,7 +345,7 @@
 .backdrop.hidden {
   display: none;
 }
-.base-emoji .variations {
+.variations {
   position: absolute;
   z-index: 3;
   display: none;
@@ -362,6 +360,6 @@
   box-shadow: var(--variations-box-shadow);
   outline: none;
 }
-.base-emoji.active .variations {
+.emoji.active .variations {
   display: grid;
 }

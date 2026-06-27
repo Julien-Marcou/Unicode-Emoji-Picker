@@ -18,19 +18,6 @@ emojiGroupTemplate.innerHTML = `
   <div class="group"></div>
 `;
 
-const baseEmojiTemplate = document.createElement('template');
-baseEmojiTemplate.innerHTML = `
-  <div class="base-emoji">
-    <button type="button" class="button"></button>
-  </div>
-`;
-
-const baseEmojiVariationsTemplate = document.createElement('template');
-baseEmojiVariationsTemplate.innerHTML = `
-  <div class="variations-marker"></div>
-  <div class="variations" tabindex="-1"></div>
-`;
-
 const emojiTemplate = document.createElement('template');
 emojiTemplate.innerHTML = `
   <div class="emoji">
@@ -38,11 +25,17 @@ emojiTemplate.innerHTML = `
   </div>
 `;
 
+const emojiWithVariationsTemplate = document.createElement('template');
+emojiWithVariationsTemplate.innerHTML = `
+  <div class="emoji has-variations">
+    <button type="button" class="button"></button>
+    <div class="variations" tabindex="-1"></div>
+  </div>
+`;
+
 export class EmojiPickerElement extends HTMLElement {
 
-  static get observedAttributes() {
-    return ['version'];
-  }
+  static observedAttributes = ['version'];
 
   get selectedGroup() {
     return this.activeGroupKey;
@@ -195,11 +188,11 @@ export class EmojiPickerElement extends HTMLElement {
   attributeChangedCallback(attributeName, oldValue, newValue) {
     if (attributeName === 'version') {
       this.emojis = getEmojisGroupedBy('category', {versionAbove: newValue});
-      this.buildEmojis();
+      this.#buildEmojis();
     }
   }
 
-  buildEmojis() {
+  #buildEmojis() {
     this.closeVariationsPanel();
     this.baseEmojiElements = new Map();
     this.baseEmojiVariationsElements = new Map();
@@ -208,51 +201,7 @@ export class EmojiPickerElement extends HTMLElement {
         const groupElement = this.groupElements.get(group);
         groupElement.innerHTML = '';
         for (const baseEmoji of this.emojis[groupKey]) {
-          const baseEmojiContent = baseEmojiTemplate.content.cloneNode(true);
-          const baseEmojiElement = baseEmojiContent.querySelector('.base-emoji');
-          this.baseEmojiElements.set(baseEmoji, baseEmojiElement);
-          baseEmojiElement.addEventListener('focusout', (event) => {
-            if (this.activeBaseEmoji) {
-              const activeBaseEmojiElement = this.baseEmojiElements.get(this.activeBaseEmoji);
-              if ((!event.relatedTarget || !activeBaseEmojiElement.contains(event.relatedTarget))) {
-                this.closeVariationsPanel();
-              }
-            }
-          }, { passive: true });
-          const baseEmojiButton = baseEmojiContent.querySelector('.button');
-          baseEmojiButton.innerHTML = baseEmoji.emoji;
-          baseEmojiButton.setAttribute('title', baseEmoji.description);
-          baseEmojiButton.addEventListener('click', () => {
-            this.selectBaseEmoji(baseEmoji);
-          }, { passive: true });
-          baseEmojiButton.addEventListener('focus', () => {
-            this.scrollToEmoji(baseEmojiElement);
-          }, { passive: true });
-          if (baseEmoji.variations) {
-            baseEmojiElement.classList.add('has-variations');
-            const baseEmojiVariationsContent = baseEmojiVariationsTemplate.content.cloneNode(true);
-            const baseEmojiVariationsElement = baseEmojiVariationsContent.querySelector('.variations');
-            this.baseEmojiVariationsElements.set(baseEmoji, baseEmojiVariationsElement);
-            for (const emoji of [baseEmoji, ...baseEmoji.variations]) {
-              if (emoji !== baseEmoji) {
-                emoji.base = baseEmoji;
-              }
-              const emojiContent = emojiTemplate.content.cloneNode(true);
-              const emojiElement = emojiContent.querySelector('.emoji');
-              const emojiButton = emojiContent.querySelector('.button');
-              emojiButton.innerHTML = emoji.emoji;
-              emojiButton.setAttribute('title', emoji.description);
-              emojiButton.addEventListener('click', () => {
-                this.selectEmoji(emoji);
-              }, { passive: true });
-              emojiButton.addEventListener('focus', () => {
-                this.scrollToEmoji(baseEmojiElement, emojiElement);
-              }, { passive: true });
-              baseEmojiVariationsElement.appendChild(emojiContent);
-            }
-            baseEmojiElement.appendChild(baseEmojiVariationsContent);
-          }
-          groupElement.appendChild(baseEmojiContent);
+          groupElement.appendChild(this.#buildBaseEmoji(baseEmoji));
         }
       }
     }
@@ -260,6 +209,61 @@ export class EmojiPickerElement extends HTMLElement {
       this.searchEmoji(this.searchInputElement.value);
     }
   }
+
+  #buildBaseEmoji(baseEmoji) {
+    const baseEmojiTemplate = baseEmoji.variations ? emojiWithVariationsTemplate : emojiTemplate;
+    const baseEmojiContent = baseEmojiTemplate.content.cloneNode(true);
+    const baseEmojiElement = baseEmojiContent.querySelector('.emoji');
+    this.baseEmojiElements.set(baseEmoji, baseEmojiElement);
+    baseEmojiElement.addEventListener('focusout', (event) => {
+      if (this.activeBaseEmoji) {
+        const activeBaseEmojiElement = this.baseEmojiElements.get(this.activeBaseEmoji);
+        if ((!event.relatedTarget || !activeBaseEmojiElement.contains(event.relatedTarget))) {
+          this.closeVariationsPanel();
+        }
+      }
+    }, { passive: true });
+    const baseEmojiButton = baseEmojiContent.querySelector('.button');
+    baseEmojiButton.innerHTML = baseEmoji.emoji;
+    baseEmojiButton.setAttribute('title', baseEmoji.description);
+    baseEmojiButton.addEventListener('click', () => {
+      this.selectBaseEmoji(baseEmoji);
+    }, { passive: true });
+    baseEmojiButton.addEventListener('focus', () => {
+      this.scrollToEmoji(baseEmojiElement);
+    }, { passive: true });
+
+    if (baseEmoji.variations) {
+      const emojiVariationsElement = baseEmojiContent.querySelector('.variations');
+      this.baseEmojiVariationsElements.set(baseEmoji, emojiVariationsElement);
+      // Include base emoji when building variations panel
+      for (const emojiVariation of [baseEmoji, ...baseEmoji.variations]) {
+        // Add `base` attribute so that when we emit the "emoji-pick" event, when know the associated base emoji
+        if (emojiVariation !== baseEmoji) {
+          emojiVariation.base = baseEmoji;
+        }
+        emojiVariationsElement.appendChild(this.#buildEmojiVariation(emojiVariation));
+      }
+    }
+
+    return baseEmojiContent;
+  }
+
+  #buildEmojiVariation(emojiVariation) {
+    const emojiVariationContent = emojiTemplate.content.cloneNode(true);
+    const emojiVariationElement = emojiVariationContent.querySelector('.emoji');
+    const emojiVariationButton = emojiVariationContent.querySelector('.button');
+    emojiVariationButton.innerHTML = emojiVariation.emoji;
+    emojiVariationButton.setAttribute('title', emojiVariation.description);
+    emojiVariationButton.addEventListener('click', () => {
+      this.selectEmoji(emojiVariation);
+    }, { passive: true });
+    emojiVariationButton.addEventListener('focus', () => {
+      this.scrollToEmoji(emojiElement, emojiVariationElement);
+    }, { passive: true });
+    return emojiVariationContent;
+  }
+
 
   setTranslation(translation) {
     if (translation.search && translation.search.inputPlaceholder) {
