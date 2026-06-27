@@ -214,7 +214,7 @@
 /* Title/search bar*/
 .title-bar {
   position: sticky;
-  z-index: 40;
+  z-index: 4;
   top: -1px;
   display: flex;
   align-items: center;
@@ -303,7 +303,7 @@
   display: none;
 }
 .base-emoji.active {
-  z-index: 20;
+  z-index: 2;
 }
 .base-emoji.has-variations > .button {
   border-bottom-right-radius: 0;
@@ -331,7 +331,7 @@
 .results .backdrop {
   display: none;
   position: absolute;
-  z-index: 10;
+  z-index: 1;
   top: 0;
   bottom: 0;
   left: 0;
@@ -343,7 +343,7 @@
 }
 .base-emoji .variations {
   position: absolute;
-  z-index: 30;
+  z-index: 3;
   display: none;
   grid-template-columns: repeat(auto-fit, minmax(1.85em, 1fr));
   grid-gap: 0.2em;
