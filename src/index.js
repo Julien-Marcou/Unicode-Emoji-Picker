@@ -138,6 +138,7 @@ export class EmojiPickerElement extends HTMLElement {
     this.groupFiltersElement = this.emojiPicker.querySelector('.group-filters');
     this.contentElement = this.emojiPicker.querySelector('.content');
     this.resultsElement = this.contentElement.querySelector('.results');
+    this.backdropElement = this.contentElement.querySelector('.backdrop');
 
     // Title/search bar
     const emojiTitleBarElement = this.emojiPicker.querySelector('.title-bar');
@@ -402,7 +403,7 @@ export class EmojiPickerElement extends HTMLElement {
     }
     this.activeBaseEmoji = baseEmoji;
     const baseEmojiElement = this.baseEmojiElements.get(this.activeBaseEmoji);
-    this.resultsElement.classList.add('highlight');
+    this.backdropElement.classList.remove('hidden');
     baseEmojiElement.classList.add('active');
     this.updateVariationsPanel();
   }
@@ -413,7 +414,7 @@ export class EmojiPickerElement extends HTMLElement {
     }
     const baseEmojiElement = this.baseEmojiElements.get(this.activeBaseEmoji);
     this.activeBaseEmoji = null;
-    this.resultsElement.classList.remove('highlight');
+    this.backdropElement.classList.add('hidden');
     baseEmojiElement.classList.remove('active');
     this.updateVariationsPanel();
   }

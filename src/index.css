@@ -1,4 +1,3 @@
-
 * {
   box-sizing: border-box;
 }
@@ -191,10 +190,12 @@
   --scrollbar-width: 14px;
   --scrollbar-thumb-fill-color: var(--content-scrollbar-thumb-fill-color);
   --scrollbar-thumb-fill-color-hover: var(--content-scrollbar-thumb-fill-color-hover);
-  --content-padding: 0 0.8em 0.8em;
   position: relative;
   flex-grow: 1;
   border-top: var(--filters-border-width) solid var(--filters-border-color);
+}
+.content::part(content) {
+  position: relative;
 }
 :host([filters-position="bottom"]) .content,
 :host([filters-position="left"]) .content,
@@ -218,10 +219,10 @@
   top: -1px;
   display: flex;
   align-items: center;
-  max-width: var(--viewport-width);
+  width: 100%;
   height: 3em;
   padding: 1px 1.1em 0;
-  margin: -1px -0.8em 0;
+  margin-top: -1px;
   background-color: var(--title-bar-fill-color);
 }
 .title-bar .title {
@@ -258,6 +259,9 @@
 }
 
 /* Content grid */
+.results-wrapper {
+  padding: 0 0.8em 0.8em;
+}
 .results {
   position: relative;
   display: grid;
@@ -272,12 +276,14 @@
 }
 
 /* Emojis */
+.base-emoji {
+  position: relative;
+}
 .base-emoji,
 .emoji {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
 }
 .base-emoji > .button,
 .emoji > .button {
@@ -328,8 +334,8 @@
 }
 
 /* Emoji variations panel */
-.results .backdrop {
-  display: none;
+.backdrop {
+  display: block;
   position: absolute;
   z-index: 1;
   top: 0;
@@ -338,8 +344,8 @@
   right: 0;
   background-color: var(--variations-backdrop-fill-color);
 }
-.results.highlight .backdrop {
-  display: block;
+.backdrop.hidden {
+  display: none;
 }
 .base-emoji .variations {
   position: absolute;
