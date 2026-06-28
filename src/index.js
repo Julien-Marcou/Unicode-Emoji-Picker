@@ -37,130 +37,139 @@ export class EmojiPickerElement extends HTMLElement {
 
   static observedAttributes = ['version'];
 
+  #groups = new Map([
+    [
+      'search',
+      {
+        emoji: '🔎',
+        title: 'Search an Emoji',
+      }
+    ],
+    [
+      'face-emotion',
+      {
+        emoji: '😀️',
+        title: 'Smileys & Emotion',
+      },
+    ],
+    [
+      'food-drink',
+      {
+        emoji: '🥕️',
+        title: 'Food & Drink',
+      },
+    ],
+    [
+      'animals-nature',
+      {
+        emoji: '🦜️',
+        title: 'Nature & Animals',
+      },
+    ],
+    [
+      'activities-events',
+      {
+        emoji: '♟️',
+        title: 'Activities & Events',
+      },
+    ],
+    [
+      'person-people',
+      {
+        emoji: '🧍️',
+        title: 'People',
+      },
+    ],
+    [
+      'travel-places',
+      {
+        emoji: '✈️',
+        title: 'Travel & Places',
+      },
+    ],
+    [
+      'objects',
+      {
+        emoji: '👒',
+        title: 'Clothing & Objects',
+      },
+    ],
+    [
+      'symbols',
+      {
+        emoji: '💬️',
+        title: 'Symbols',
+      },
+    ],
+    [
+      'flags',
+      {
+        emoji: '🚩',
+        title: 'Flags',
+      },
+    ],
+  ]);
+
+  #activeGroupKey = null;
+  #emojis = null;
+  #activeBaseEmoji = null;
+  #baseEmojiVariationsGap = 4;
+  #scrollToEmojiViewportMargin = 4;
+  #groupFilterElements = new Map();
+  #groupElements = new Map();
+  #baseEmojiElements = new Map();
+  #baseEmojiVariationsElements = new Map();
+
+  #groupFiltersElement;
+  #contentElement;
+  #resultsElement;
+  #backdropElement;
+  #titleElement;
+  #searchInputElement;
+
   get selectedGroup() {
-    return this.activeGroupKey;
+    return this.#activeGroupKey;
   }
 
   constructor() {
     super();
-    this.groups = new Map([
-      [
-        'search',
-        {
-          emoji: '🔎',
-          title: 'Search an Emoji',
-        }
-      ],
-      [
-        'face-emotion',
-        {
-          emoji: '😀️',
-          title: 'Smileys & Emotion',
-        },
-      ],
-      [
-        'food-drink',
-        {
-          emoji: '🥕️',
-          title: 'Food & Drink',
-        },
-      ],
-      [
-        'animals-nature',
-        {
-          emoji: '🦜️',
-          title: 'Nature & Animals',
-        },
-      ],
-      [
-        'activities-events',
-        {
-          emoji: '♟️',
-          title: 'Activities & Events',
-        },
-      ],
-      [
-        'person-people',
-        {
-          emoji: '🧍️',
-          title: 'People',
-        },
-      ],
-      [
-        'travel-places',
-        {
-          emoji: '✈️',
-          title: 'Travel & Places',
-        },
-      ],
-      [
-        'objects',
-        {
-          emoji: '👒',
-          title: 'Clothing & Objects',
-        },
-      ],
-      [
-        'symbols',
-        {
-          emoji: '💬️',
-          title: 'Symbols',
-        },
-      ],
-      [
-        'flags',
-        {
-          emoji: '🚩',
-          title: 'Flags',
-        },
-      ],
-    ]);
-    this.activeGroupKey = null;
-    this.emojis = null;
-    this.activeBaseEmoji = null;
-    this.baseEmojiVariationsGap = 4;
-    this.scrollToEmojiViewportMargin = 4;
-    this.groupFilterElements = new Map();
-    this.groupElements = new Map();
-    this.baseEmojiElements = new Map();
-    this.baseEmojiVariationsElements = new Map();
 
     // Global structure
     const emojiPickerContent = emojiPickerTemplate.content.cloneNode(true);
-    this.emojiPicker = emojiPickerContent.querySelector('.emoji-picker');
-    this.groupFiltersElement = this.emojiPicker.querySelector('.group-filters');
-    this.contentElement = this.emojiPicker.querySelector('.content');
-    this.resultsElement = this.contentElement.querySelector('.results');
-    this.backdropElement = this.contentElement.querySelector('.backdrop');
+    const emojiPickerElement = emojiPickerContent.querySelector('.emoji-picker');
+    this.#groupFiltersElement = emojiPickerElement.querySelector('.group-filters');
+    this.#contentElement = emojiPickerElement.querySelector('.content');
+    this.#resultsElement = this.#contentElement.querySelector('.results');
+    this.#backdropElement = this.#contentElement.querySelector('.backdrop');
 
     // Title/search bar
-    const emojiTitleBarElement = this.emojiPicker.querySelector('.title-bar');
-    this.titleElement = emojiTitleBarElement.querySelector('.title');
-    this.searchInputElement = emojiTitleBarElement.querySelector('.search-input');
-    this.searchInputElement.placeholder = 'Search an Emoji...';
-    this.searchInputElement.addEventListener('input', () => {
-      this.searchEmoji(this.searchInputElement.value);
+    const emojiTitleBarElement = emojiPickerElement.querySelector('.title-bar');
+    this.#titleElement = emojiTitleBarElement.querySelector('.title');
+    this.#searchInputElement = emojiTitleBarElement.querySelector('.search-input');
+    this.#searchInputElement.placeholder = 'Search an Emoji...';
+    this.#searchInputElement.addEventListener('input', () => {
+      this.searchEmoji(this.#searchInputElement.value);
     }, { passive: true });
 
     // Emoji filters
-    for (const [groupKey, group] of this.groups) {
+    for (const [groupKey, group] of this.#groups) {
       const groupFilterContent = emojiGroupFilterTemplate.content.cloneNode(true);
       const groupFilterElement = groupFilterContent.querySelector('.group-filter');
-      this.groupFilterElements.set(group, groupFilterElement);
+      this.#groupFilterElements.set(group, groupFilterElement);
       const groupFilterButton = groupFilterContent.querySelector('.button');
       groupFilterButton.innerHTML = group.emoji;
       groupFilterButton.setAttribute('title', group.title);
       groupFilterButton.addEventListener('click', () => {
         this.selectGroup(groupKey);
       }, { passive: true });
-      this.groupFiltersElement.appendChild(groupFilterContent);
+      this.#groupFiltersElement.appendChild(groupFilterContent);
 
       // Emoji groups
       if (groupKey !== 'search') {
         const groupContent = emojiGroupTemplate.content.cloneNode(true);
         const groupElement = groupContent.querySelector('.group');
-        this.groupElements.set(group, groupElement);
-        this.resultsElement.appendChild(groupContent);
+        this.#groupElements.set(group, groupElement);
+        this.#resultsElement.appendChild(groupContent);
       }
     }
 
@@ -168,7 +177,7 @@ export class EmojiPickerElement extends HTMLElement {
     this.shadowRoot.appendChild(emojiPickerContent);
     this.shadowRoot.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
-        this.closeVariationsPanel();
+        this.#closeVariationsPanel();
       }
     }, { passive: true });
   }
@@ -187,26 +196,26 @@ export class EmojiPickerElement extends HTMLElement {
 
   attributeChangedCallback(attributeName, oldValue, newValue) {
     if (attributeName === 'version') {
-      this.emojis = getEmojisGroupedBy('category', {versionAbove: newValue});
+      this.#emojis = getEmojisGroupedBy('category', {versionAbove: newValue});
       this.#buildEmojis();
     }
   }
 
   #buildEmojis() {
-    this.closeVariationsPanel();
-    this.baseEmojiElements = new Map();
-    this.baseEmojiVariationsElements = new Map();
-    for (const [groupKey, group] of this.groups) {
+    this.#closeVariationsPanel();
+    this.#baseEmojiElements = new Map();
+    this.#baseEmojiVariationsElements = new Map();
+    for (const [groupKey, group] of this.#groups) {
       if (groupKey !== 'search') {
-        const groupElement = this.groupElements.get(group);
+        const groupElement = this.#groupElements.get(group);
         groupElement.innerHTML = '';
-        for (const baseEmoji of this.emojis[groupKey]) {
+        for (const baseEmoji of this.#emojis[groupKey]) {
           groupElement.appendChild(this.#buildBaseEmoji(baseEmoji));
         }
       }
     }
-    if (this.activeGroupKey === 'search') {
-      this.searchEmoji(this.searchInputElement.value);
+    if (this.#activeGroupKey === 'search') {
+      this.searchEmoji(this.#searchInputElement.value);
     }
   }
 
@@ -214,12 +223,12 @@ export class EmojiPickerElement extends HTMLElement {
     const baseEmojiTemplate = baseEmoji.variations ? emojiWithVariationsTemplate : emojiTemplate;
     const baseEmojiContent = baseEmojiTemplate.content.cloneNode(true);
     const baseEmojiElement = baseEmojiContent.querySelector('.emoji');
-    this.baseEmojiElements.set(baseEmoji, baseEmojiElement);
+    this.#baseEmojiElements.set(baseEmoji, baseEmojiElement);
     baseEmojiElement.addEventListener('focusout', (event) => {
-      if (this.activeBaseEmoji) {
-        const activeBaseEmojiElement = this.baseEmojiElements.get(this.activeBaseEmoji);
+      if (this.#activeBaseEmoji) {
+        const activeBaseEmojiElement = this.#baseEmojiElements.get(this.#activeBaseEmoji);
         if ((!event.relatedTarget || !activeBaseEmojiElement.contains(event.relatedTarget))) {
-          this.closeVariationsPanel();
+          this.#closeVariationsPanel();
         }
       }
     }, { passive: true });
@@ -227,15 +236,15 @@ export class EmojiPickerElement extends HTMLElement {
     baseEmojiButton.innerHTML = baseEmoji.emoji;
     baseEmojiButton.setAttribute('title', baseEmoji.description);
     baseEmojiButton.addEventListener('click', () => {
-      this.selectBaseEmoji(baseEmoji);
+      this.#selectBaseEmoji(baseEmoji);
     }, { passive: true });
     baseEmojiButton.addEventListener('focus', () => {
-      this.scrollToEmoji(baseEmojiElement);
+      this.#scrollToEmoji(baseEmojiElement);
     }, { passive: true });
 
     if (baseEmoji.variations) {
       const emojiVariationsElement = baseEmojiContent.querySelector('.variations');
-      this.baseEmojiVariationsElements.set(baseEmoji, emojiVariationsElement);
+      this.#baseEmojiVariationsElements.set(baseEmoji, emojiVariationsElement);
       // Include base emoji when building variations panel
       for (const emojiVariation of [baseEmoji, ...baseEmoji.variations]) {
         // Add `base` attribute so that when we emit the "emoji-pick" event, when know the associated base emoji
@@ -256,10 +265,10 @@ export class EmojiPickerElement extends HTMLElement {
     emojiVariationButton.innerHTML = emojiVariation.emoji;
     emojiVariationButton.setAttribute('title', emojiVariation.description);
     emojiVariationButton.addEventListener('click', () => {
-      this.selectEmoji(emojiVariation);
+      this.#selectEmoji(emojiVariation);
     }, { passive: true });
     emojiVariationButton.addEventListener('focus', () => {
-      this.scrollToEmoji(emojiElement, emojiVariationElement);
+      this.#scrollToEmoji(emojiElement, emojiVariationElement);
     }, { passive: true });
     return emojiVariationContent;
   }
@@ -267,11 +276,11 @@ export class EmojiPickerElement extends HTMLElement {
 
   setTranslation(translation) {
     if (translation.search && translation.search.inputPlaceholder) {
-      this.searchInputElement.placeholder = translation.search.inputPlaceholder;
+      this.#searchInputElement.placeholder = translation.search.inputPlaceholder;
     }
-    for (const [groupKey, group] of this.groups) {
+    for (const [groupKey, group] of this.#groups) {
       if (translation[groupKey]) {
-        const groupFilterElement = this.groupFilterElements.get(group);
+        const groupFilterElement = this.#groupFilterElements.get(group);
         if (translation[groupKey].emoji) {
           group.emoji = translation[groupKey].emoji;
           groupFilterElement.querySelector('.button').innerHTML = group.emoji;
@@ -282,84 +291,84 @@ export class EmojiPickerElement extends HTMLElement {
         }
       }
     }
-    if (this.activeGroupKey) {
-      this.titleElement.innerHTML = this.groups.get(this.activeGroupKey).title;
+    if (this.#activeGroupKey) {
+      this.#titleElement.innerHTML = this.#groups.get(this.#activeGroupKey).title;
     }
   }
 
   selectGroup(groupKey) {
     // Reset viewport
-    if (this.activeBaseEmoji) {
-      this.closeVariationsPanel();
+    if (this.#activeBaseEmoji) {
+      this.#closeVariationsPanel();
     }
-    if (this.activeGroupKey) {
-      this.contentElement.scrollTop = 0;
+    if (this.#activeGroupKey) {
+      this.#contentElement.scrollTop = 0;
     }
 
     // Reset search
-    if (this.activeGroupKey === 'search') {
+    if (this.#activeGroupKey === 'search') {
       this.clearSearch();
     }
 
     // Switch active state
-    if (groupKey !== this.activeGroupKey) {
+    if (groupKey !== this.#activeGroupKey) {
 
       // Reset previous group filter
-      if (this.activeGroupKey) {
-        const previousActiveGroup = this.groups.get(this.activeGroupKey);
-        this.groupFilterElements.get(previousActiveGroup).classList.remove('active');
-        if (this.activeGroupKey === 'search') {
-          for (const groupElement of this.groupElements.values()) {
+      if (this.#activeGroupKey) {
+        const previousActiveGroup = this.#groups.get(this.#activeGroupKey);
+        this.#groupFilterElements.get(previousActiveGroup).classList.remove('active');
+        if (this.#activeGroupKey === 'search') {
+          for (const groupElement of this.#groupElements.values()) {
             groupElement.classList.remove('active');
           }
         }
         else {
-          this.groupElements.get(previousActiveGroup).classList.remove('active');
+          this.#groupElements.get(previousActiveGroup).classList.remove('active');
         }
       }
 
       // Set new group filter
-      this.activeGroupKey = groupKey;
-      const activeGroup = this.groups.get(this.activeGroupKey);
-      this.titleElement.innerHTML = activeGroup.title;
-      this.groupFilterElements.get(activeGroup).classList.add('active');
-      if (this.activeGroupKey === 'search') {
-        this.titleElement.classList.add('hidden');
-        this.searchInputElement.classList.remove('hidden');
-        for (const groupElement of this.groupElements.values()) {
+      this.#activeGroupKey = groupKey;
+      const activeGroup = this.#groups.get(this.#activeGroupKey);
+      this.#titleElement.innerHTML = activeGroup.title;
+      this.#groupFilterElements.get(activeGroup).classList.add('active');
+      if (this.#activeGroupKey === 'search') {
+        this.#titleElement.classList.add('hidden');
+        this.#searchInputElement.classList.remove('hidden');
+        for (const groupElement of this.#groupElements.values()) {
           groupElement.classList.add('active');
         }
       }
       else {
-        this.titleElement.classList.remove('hidden');
-        this.searchInputElement.classList.add('hidden');
-        this.groupElements.get(activeGroup).classList.add('active');
+        this.#titleElement.classList.remove('hidden');
+        this.#searchInputElement.classList.add('hidden');
+        this.#groupElements.get(activeGroup).classList.add('active');
       }
     }
 
     // Focus search input if needed
-    if (this.activeGroupKey === 'search') {
-      this.searchInputElement.focus();
+    if (this.#activeGroupKey === 'search') {
+      this.#searchInputElement.focus();
     }
   }
 
-  selectBaseEmoji(baseEmoji) {
-    if (baseEmoji === this.activeBaseEmoji) {
-      this.closeVariationsPanel();
+  #selectBaseEmoji(baseEmoji) {
+    if (baseEmoji === this.#activeBaseEmoji) {
+      this.#closeVariationsPanel();
     }
     else {
       if (baseEmoji.variations) {
-        this.openVariationsPanel(baseEmoji);
+        this.#openVariationsPanel(baseEmoji);
       }
       else {
-        this.selectEmoji(baseEmoji);
+        this.#selectEmoji(baseEmoji);
       }
     }
   }
 
-  selectEmoji(emoji) {
-    if (this.activeBaseEmoji) {
-      this.closeVariationsPanel();
+  #selectEmoji(emoji) {
+    if (this.#activeBaseEmoji) {
+      this.#closeVariationsPanel();
     }
     this.dispatchEvent(new CustomEvent(
         'emoji-pick',
@@ -371,13 +380,13 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   searchEmoji(query) {
-    if (this.searchInputElement.value !== query) {
-      this.searchInputElement.value = query;
+    if (this.#searchInputElement.value !== query) {
+      this.#searchInputElement.value = query;
     }
     const searchTerms = query.toLowerCase().split(' ');
-    this.contentElement.scrollTop = 0;
-    for (const [baseEmoji, baseEmojiElement] of this.baseEmojiElements) {
-      if(this.emojiMatchTerms(baseEmoji, searchTerms)) {
+    this.#contentElement.scrollTop = 0;
+    for (const [baseEmoji, baseEmojiElement] of this.#baseEmojiElements) {
+      if(this.#emojiMatchTerms(baseEmoji, searchTerms)) {
         baseEmojiElement.classList.remove('hidden');
       }
       else {
@@ -387,13 +396,13 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   clearSearch() {
-    this.searchInputElement.value = '';
-    for (const [baseEmoji, baseEmojiElement] of this.baseEmojiElements) {
+    this.#searchInputElement.value = '';
+    for (const [baseEmoji, baseEmojiElement] of this.#baseEmojiElements) {
       baseEmojiElement.classList.remove('hidden');
     }
   }
 
-  emojiMatchTerms(emoji, searchTerms) {
+  #emojiMatchTerms(emoji, searchTerms) {
     return searchTerms.every((searchTerm) => {
       return emoji.description.toLowerCase().includes(searchTerm) || emoji.keywords.some((keyword) => {
         return keyword.toLowerCase().includes(searchTerm);
@@ -401,37 +410,37 @@ export class EmojiPickerElement extends HTMLElement {
     });
   }
 
-  openVariationsPanel(baseEmoji) {
-    if (this.activeBaseEmoji) {
-      this.closeVariationsPanel();
+  #openVariationsPanel(baseEmoji) {
+    if (this.#activeBaseEmoji) {
+      this.#closeVariationsPanel();
     }
-    this.activeBaseEmoji = baseEmoji;
-    const baseEmojiElement = this.baseEmojiElements.get(this.activeBaseEmoji);
-    this.backdropElement.classList.remove('hidden');
+    this.#activeBaseEmoji = baseEmoji;
+    const baseEmojiElement = this.#baseEmojiElements.get(this.#activeBaseEmoji);
+    this.#backdropElement.classList.remove('hidden');
     baseEmojiElement.classList.add('active');
-    this.updateVariationsPanel();
+    this.#updateVariationsPanel();
   }
 
-  closeVariationsPanel() {
-    if (!this.activeBaseEmoji) {
+  #closeVariationsPanel() {
+    if (!this.#activeBaseEmoji) {
       return;
     }
-    const baseEmojiElement = this.baseEmojiElements.get(this.activeBaseEmoji);
-    this.activeBaseEmoji = null;
-    this.backdropElement.classList.add('hidden');
+    const baseEmojiElement = this.#baseEmojiElements.get(this.#activeBaseEmoji);
+    this.#activeBaseEmoji = null;
+    this.#backdropElement.classList.add('hidden');
     baseEmojiElement.classList.remove('active');
-    this.updateVariationsPanel();
+    this.#updateVariationsPanel();
   }
 
-  updateVariationsPanel() {
-    this.resultsElement.style.paddingBottom = '';
-    if (this.activeBaseEmoji) {
-      const baseEmoji = this.baseEmojiElements.get(this.activeBaseEmoji);
-      const baseEmojiVariationsElement = this.baseEmojiVariationsElements.get(this.activeBaseEmoji);
+  #updateVariationsPanel() {
+    this.#resultsElement.style.paddingBottom = '';
+    if (this.#activeBaseEmoji) {
+      const baseEmoji = this.#baseEmojiElements.get(this.#activeBaseEmoji);
+      const baseEmojiVariationsElement = this.#baseEmojiVariationsElements.get(this.#activeBaseEmoji);
 
       // Horizontal alignment
       const minTargetCenteredX = (baseEmojiVariationsElement.offsetWidth / 2);
-      const maxTargetCenteredX = this.resultsElement.clientWidth - (baseEmojiVariationsElement.offsetWidth / 2);
+      const maxTargetCenteredX = this.#resultsElement.clientWidth - (baseEmojiVariationsElement.offsetWidth / 2);
       const currentCenteredX = baseEmoji.offsetLeft + baseEmojiVariationsElement.offsetLeft + (baseEmojiVariationsElement.offsetWidth / 2);
       let targetCenteredX = baseEmoji.offsetLeft + (baseEmoji.offsetWidth / 2);
       // Left overflow
@@ -445,75 +454,76 @@ export class EmojiPickerElement extends HTMLElement {
       baseEmojiVariationsElement.style.transform = `translateX(${targetCenteredX - currentCenteredX}px)`;
 
       // Vertical alignment
-      const currentTop = this.resultsElement.offsetTop + baseEmoji.offsetTop;
+      const currentTop = this.#resultsElement.offsetTop + baseEmoji.offsetTop;
       const currentBottom = currentTop + baseEmojiVariationsElement.offsetHeight;
-      const targetTop = currentTop - baseEmojiVariationsElement.offsetHeight - this.baseEmojiVariationsGap;
-      const targetBottom = currentBottom + baseEmoji.offsetHeight + this.baseEmojiVariationsGap;
-      const minTargetTop = this.contentElement.scrollTop + this.resultsElement.offsetTop;
-      const maxTargetBottom = this.contentElement.scrollTop + this.contentElement.offsetHeight;
+      const targetTop = currentTop - baseEmojiVariationsElement.offsetHeight - this.#baseEmojiVariationsGap;
+      const targetBottom = currentBottom + baseEmoji.offsetHeight + this.#baseEmojiVariationsGap;
+      const minTargetTop = this.#contentElement.scrollTop + this.#resultsElement.offsetTop;
+      const maxTargetBottom = this.#contentElement.scrollTop + this.#contentElement.offsetHeight;
       // Display the panel above the base emoji if it doesn't fit under without scrolling but does above
       if (targetBottom > maxTargetBottom && targetTop >= minTargetTop) {
-        baseEmojiVariationsElement.style.top = `${- baseEmojiVariationsElement.offsetHeight - this.baseEmojiVariationsGap}px`;
+        baseEmojiVariationsElement.style.top = `${- baseEmojiVariationsElement.offsetHeight - this.#baseEmojiVariationsGap}px`;
       }
       // Otherwise display it under the base emoji
       else {
-        baseEmojiVariationsElement.style.top = `${baseEmoji.offsetHeight + this.baseEmojiVariationsGap}px`;
+        baseEmojiVariationsElement.style.top = `${baseEmoji.offsetHeight + this.#baseEmojiVariationsGap}px`;
 
         // Add padding to make overflowing content visible, if needed
-        const maxContentBottom = this.resultsElement.offsetTop + this.resultsElement.clientHeight;
+        const maxContentBottom = this.#resultsElement.offsetTop + this.#resultsElement.clientHeight;
         if (targetBottom > maxContentBottom) {
-          this.resultsElement.style.paddingBottom = `${targetBottom - maxContentBottom}px`;
+          this.#resultsElement.style.paddingBottom = `${targetBottom - maxContentBottom}px`;
         }
 
         // Scroll to make the maximum of the variations visible, if needed
         if (targetBottom > maxTargetBottom) {
-          const maxScrollOffset = baseEmoji.offsetTop - this.contentElement.scrollTop - this.scrollToEmojiViewportMargin;
-          const targetScrollOffset = targetBottom - maxTargetBottom + this.scrollToEmojiViewportMargin;
-          this.contentElement.scrollTop += Math.min(maxScrollOffset, targetScrollOffset);
+          const maxScrollOffset = baseEmoji.offsetTop - this.#contentElement.scrollTop - this.#scrollToEmojiViewportMargin;
+          const targetScrollOffset = targetBottom - maxTargetBottom + this.#scrollToEmojiViewportMargin;
+          this.#contentElement.scrollTop += Math.min(maxScrollOffset, targetScrollOffset);
         }
       }
     }
   }
 
-  scrollToEmoji(baseEmojiElement, emojiElement) {
-    const minTop = this.contentElement.scrollTop + this.resultsElement.offsetTop + this.scrollToEmojiViewportMargin;
-    const maxBottom = this.contentElement.scrollTop + this.contentElement.offsetHeight - this.scrollToEmojiViewportMargin;
+  #scrollToEmoji(baseEmojiElement, emojiElement) {
+    const minTop = this.#contentElement.scrollTop + this.#resultsElement.offsetTop + this.#scrollToEmojiViewportMargin;
+    const maxBottom = this.#contentElement.scrollTop + this.#contentElement.offsetHeight - this.#scrollToEmojiViewportMargin;
     let currentTop;
     let currentBottom;
     if (emojiElement) {
-      currentTop = this.resultsElement.offsetTop + baseEmojiElement.offsetTop + emojiElement.parentElement.offsetTop + emojiElement.offsetTop;
+      currentTop = this.#resultsElement.offsetTop + baseEmojiElement.offsetTop + emojiElement.parentElement.offsetTop + emojiElement.offsetTop;
       currentBottom = currentTop + emojiElement.offsetHeight;
     }
     else {
-      currentTop = this.resultsElement.offsetTop + baseEmojiElement.offsetTop;
+      currentTop = this.#resultsElement.offsetTop + baseEmojiElement.offsetTop;
       currentBottom = currentTop + baseEmojiElement.offsetHeight;
     }
     if (currentTop < minTop) {
-      this.contentElement.scrollTop += currentTop - minTop;
+      this.#contentElement.scrollTop += currentTop - minTop;
     }
     else if (currentBottom > maxBottom) {
-      this.contentElement.scrollTop += currentBottom - maxBottom;
+      this.#contentElement.scrollTop += currentBottom - maxBottom;
     }
   }
 
   focusHeader() {
-    this.groupFiltersElement.querySelector('button').focus();
+    this.#groupFiltersElement.querySelector('button').focus();
   }
 
   focusContent(skipSearchInput = false) {
-    if (this.activeGroupKey === 'search') {
+    if (this.#activeGroupKey === 'search') {
       if (skipSearchInput) {
-        this.resultsElement.querySelector('button').focus();
+        this.#resultsElement.querySelector('button').focus();
       }
       else {
-        this.searchInputElement.focus();
+        this.#searchInputElement.focus();
       }
     }
     else {
-      this.groupElements.get(this.activeGroupKey).querySelector('button').focus();
+      this.#groupElements.get(this.#activeGroupKey).querySelector('button').focus();
     }
   }
 }
+
 
 const defaultTag = 'unicode-emoji-picker';
 
