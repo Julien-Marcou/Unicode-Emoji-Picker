@@ -63,53 +63,7 @@ export class EmojiPickerElement extends HTMLElement {
 
   constructor() {
     super();
-
-    // Global structure
-    const emojiPickerContent = emojiPickerTemplate.content.cloneNode(true);
-    const emojiPickerElement = emojiPickerContent.querySelector('.emoji-picker');
-    this.#groupFiltersElement = emojiPickerElement.querySelector('.group-filters');
-    this.#contentElement = emojiPickerElement.querySelector('.content');
-    this.#resultsElement = this.#contentElement.querySelector('.results');
-    this.#backdropElement = this.#contentElement.querySelector('.backdrop');
-
-    // Title/search bar
-    const emojiTitleBarElement = emojiPickerElement.querySelector('.title-bar');
-    this.#titleElement = emojiTitleBarElement.querySelector('.title');
-    this.#searchInputElement = emojiTitleBarElement.querySelector('.search-input');
-    this.#searchInputElement.placeholder = 'Search an Emoji...';
-    this.#searchInputElement.addEventListener('input', () => {
-      this.searchEmoji(this.#searchInputElement.value);
-    }, { passive: true });
-
-    // Emoji filters
-    for (const [groupKey, group] of this.#groups) {
-      const groupFilterContent = emojiGroupFilterTemplate.content.cloneNode(true);
-      const groupFilterElement = groupFilterContent.querySelector('.group-filter');
-      this.#groupFilterElements.set(group, groupFilterElement);
-      const groupFilterButton = groupFilterContent.querySelector('.button');
-      groupFilterButton.innerHTML = group.emoji;
-      groupFilterButton.setAttribute('title', group.title);
-      groupFilterButton.addEventListener('click', () => {
-        this.selectGroup(groupKey);
-      }, { passive: true });
-      this.#groupFiltersElement.appendChild(groupFilterContent);
-
-      // Emoji groups
-      if (groupKey !== 'search') {
-        const groupContent = emojiGroupTemplate.content.cloneNode(true);
-        const groupElement = groupContent.querySelector('.group');
-        this.#groupElements.set(group, groupElement);
-        this.#resultsElement.appendChild(groupContent);
-      }
-    }
-
-    this.attachShadow({mode: 'open'});
-    this.shadowRoot.appendChild(emojiPickerContent);
-    this.shadowRoot.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        this.#closeVariationsPanel();
-      }
-    }, { passive: true });
+    this.#buildComponent()
   }
 
   connectedCallback() {
@@ -128,6 +82,64 @@ export class EmojiPickerElement extends HTMLElement {
     if (attributeName === 'version') {
       this.#emojis = getEmojisGroupedBy('category', {versionAbove: newValue});
       this.#buildEmojis();
+    }
+  }
+
+  #buildComponent() {
+    const emojiPickerContent = emojiPickerTemplate.content.cloneNode(true);
+    const emojiPickerElement = emojiPickerContent.querySelector('.emoji-picker');
+
+    this.#buildTitleBar(emojiPickerElement);
+    this.#buildEmojiGroupFilters(emojiPickerElement);
+    this.#buildEmojiGroups(emojiPickerElement);
+
+    this.attachShadow({mode: 'open'});
+    this.shadowRoot.appendChild(emojiPickerContent);
+    this.shadowRoot.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        this.#closeVariationsPanel();
+      }
+    }, { passive: true });
+  }
+
+  #buildTitleBar(emojiPickerElement) {
+    const emojiTitleBarElement = emojiPickerElement.querySelector('.title-bar');
+    this.#titleElement = emojiTitleBarElement.querySelector('.title');
+    this.#searchInputElement = emojiTitleBarElement.querySelector('.search-input');
+    this.#searchInputElement.placeholder = 'Search an Emoji...';
+    this.#searchInputElement.addEventListener('input', () => {
+      this.searchEmoji(this.#searchInputElement.value);
+    }, { passive: true });
+  }
+
+  #buildEmojiGroupFilters(emojiPickerElement) {
+    this.#groupFiltersElement = emojiPickerElement.querySelector('.group-filters');
+    for (const [groupKey, group] of this.#groups) {
+      const groupFilterContent = emojiGroupFilterTemplate.content.cloneNode(true);
+      const groupFilterElement = groupFilterContent.querySelector('.group-filter');
+      this.#groupFilterElements.set(group, groupFilterElement);
+      const groupFilterButton = groupFilterContent.querySelector('.button');
+      groupFilterButton.innerHTML = group.emoji;
+      groupFilterButton.setAttribute('title', group.title);
+      groupFilterButton.addEventListener('click', () => {
+        this.selectGroup(groupKey);
+      }, { passive: true });
+      this.#groupFiltersElement.appendChild(groupFilterContent);
+    }
+  }
+
+  #buildEmojiGroups(emojiPickerElement) {
+    this.#contentElement = emojiPickerElement.querySelector('.content');
+    this.#resultsElement = this.#contentElement.querySelector('.results');
+    this.#backdropElement = this.#contentElement.querySelector('.backdrop');
+    for (const [groupKey, group] of this.#groups) {
+      if (groupKey === 'search') {
+        continue;
+      }
+      const groupContent = emojiGroupTemplate.content.cloneNode(true);
+      const groupElement = groupContent.querySelector('.group');
+      this.#groupElements.set(group, groupElement);
+      this.#resultsElement.appendChild(groupContent);
     }
   }
 
