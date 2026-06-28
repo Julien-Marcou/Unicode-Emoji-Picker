@@ -193,6 +193,7 @@
   position: relative;
   flex-grow: 1;
   border-top: var(--filters-border-width) solid var(--filters-border-color);
+  outline: none;
 }
 .content::part(content) {
   position: relative;
