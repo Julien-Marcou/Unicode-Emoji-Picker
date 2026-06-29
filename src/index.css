@@ -25,7 +25,7 @@
   --content-scrollbar-thumb-fill-color: #d7d7d7;
   --content-scrollbar-thumb-fill-color-hover: #aaa;
 
-  --title-bar-fill-color: rgba(255, 255, 255, 0.95);
+  --title-bar-fill-color: color-mix(in srgb, var(--fill-color), transparent 20%);
   --search-input-padding: 0.35em 0.4em 0.55em;
   --search-input-border-width: 0 0 4px 0;
   --search-input-border-color: #e4e4e4;
@@ -38,7 +38,7 @@
   --emoji-border-color-hover: #d7d7d7;
   --emoji-border-radius: 8px;
 
-  --variations-backdrop-fill-color: rgba(255, 255, 255, 0.7);
+  --variations-backdrop-fill-color: color-mix(in srgb, var(--fill-color), transparent 30%);
   --variations-fill-color: var(--fill-color);
   --variations-border-radius: var(--border-radius);
   --variations-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .2), 0 1px 3px 0 rgba(0, 0, 0, .2);
@@ -225,6 +225,7 @@
   padding: 1px 1.1em 0;
   margin-top: -1px;
   background-color: var(--title-bar-fill-color);
+  backdrop-filter: blur(6px);
 }
 .title-bar .title {
   overflow: hidden;
@@ -340,6 +341,7 @@
   left: 0;
   right: 0;
   background-color: var(--variations-backdrop-fill-color);
+  backdrop-filter: blur(1px);
 }
 .backdrop.hidden {
   display: none;
