@@ -1,4 +1,4 @@
-import { Emoji, Category } from 'unicode-emoji';
+import { BaseEmoji, EmojiVariation, Category } from 'unicode-emoji';
 
 export type EmojiTabKey = Category | 'search';
 
@@ -13,7 +13,9 @@ export type EmojiSearchTabTranslation = EmojiCategoryTabTranslation & {
 
 export type EmojiPickerTranslation = Partial<{ search: EmojiSearchTabTranslation } & Record<Category, EmojiCategoryTabTranslation>>;
 
-export type EmojiPickEvent = CustomEvent<Emoji>;
+export type PickedEmoji = BaseEmoji | EmojiVariation & { base: BaseEmoji };
+
+export type EmojiPickEvent = CustomEvent<PickedEmoji>;
 
 export interface EmojiPickerEventMap extends HTMLElementEventMap {
   'emoji-pick': EmojiPickEvent;
