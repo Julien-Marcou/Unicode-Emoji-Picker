@@ -259,10 +259,6 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   #updateTabsAndTitle(tabKey) {
-    if (tabKey === this.#selectedTabKey) {
-      return;
-    }
-
     // Update active tab
     if (this.#selectedTabKey) {
       this.#tabElements.get(this.#selectedTabKey).classList.remove('active');
@@ -341,9 +337,6 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   clearSearch() {
-    if (this.#searchInputElement.value === '') {
-      return;
-    }
     this.#searchInputElement.value = '';
     const emojiVisibilityChanges = {
       visible: Array.from(this.#baseEmojiElements.values()),
