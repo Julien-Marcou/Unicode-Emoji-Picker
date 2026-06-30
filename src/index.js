@@ -3,31 +3,22 @@ import { getEmojisGroupedBy } from 'unicode-emoji';
 import { TABS } from './tabs';
 
 const defaultVersion = '12.0';
+const defaultTag = 'unicode-emoji-picker';
 
 const emojiPickerTemplate = document.createElement('template');
-emojiPickerTemplate.innerHTML = `<style>{{COMPONENT_CSS}}</style>{{COMPONENT_HTML}}`;
+emojiPickerTemplate.innerHTML = '<style>{{index.css}}</style>{{emoji-picker.html}}';
 
 const emojiTabTemplate = document.createElement('template');
-emojiTabTemplate.innerHTML = `
-  <div class="tab">
-    <button type="button" class="button"></button>
-  </div>
-`;
+emojiTabTemplate.innerHTML = '{{emoji-tab.html}}';
 
 const emojiTemplate = document.createElement('template');
-emojiTemplate.innerHTML = `
-  <div class="emoji">
-    <button type="button" class="button"></button>
-  </div>
-`;
+emojiTemplate.innerHTML = '{{emoji.html}}';
 
 const emojiWithVariationsTemplate = document.createElement('template');
-emojiWithVariationsTemplate.innerHTML = `
-  <div class="emoji has-variations">
-    <button type="button" class="button"></button>
-    <div class="variations" tabindex="-1"></div>
-  </div>
-`;
+emojiWithVariationsTemplate.innerHTML = '{{emoji-with-variations.html}}';
+
+const emojiVariationTemplate = document.createElement('template');
+emojiVariationTemplate.innerHTML = '{{emoji-variation.html}}';
 
 export class EmojiPickerElement extends HTMLElement {
 
@@ -156,7 +147,6 @@ export class EmojiPickerElement extends HTMLElement {
     const baseEmojiContent = baseEmojiTemplate.content.cloneNode(true);
     const baseEmojiElement = baseEmojiContent.querySelector('.emoji');
     this.#baseEmojiElements.set(baseEmoji, baseEmojiElement);
-    baseEmojiElement.classList.add('hidden');
     baseEmojiElement.addEventListener('focusout', (event) => {
       if (this.#activeBaseEmoji) {
         const activeBaseEmojiElement = this.#baseEmojiElements.get(this.#activeBaseEmoji);
@@ -194,7 +184,7 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   #buildEmojiVariation(baseEmojiElement, emojiVariation) {
-    const emojiVariationContent = emojiTemplate.content.cloneNode(true);
+    const emojiVariationContent = emojiVariationTemplate.content.cloneNode(true);
     const emojiVariationElement = emojiVariationContent.querySelector('.emoji');
     const emojiVariationButton = emojiVariationContent.querySelector('.button');
     emojiVariationButton.innerHTML = emojiVariation.emoji;
@@ -490,9 +480,6 @@ export class EmojiPickerElement extends HTMLElement {
     });
   }
 }
-
-
-const defaultTag = 'unicode-emoji-picker';
 
 export function defineUnicodeEmojiPicker() {
   if (!isScrollableComponentDefined()) {
