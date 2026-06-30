@@ -304,15 +304,15 @@
   z-index: 2;
   contain: size layout style;
 }
-.emoji.has-variations {
+.emoji.with-variations {
   position: relative;
 }
-.emoji.has-variations > .button {
+.emoji.with-variations > .button {
   border-bottom-right-radius: 0;
 }
 
 /* Emoji variations marker */
-.emoji.has-variations > .button:after {
+.emoji.with-variations > .button:after {
   box-sizing: border-box;
   pointer-events: none;
   content: '';
@@ -326,8 +326,8 @@
   border-top: 0 none;
   border-left: 0 none;
 }
-.emoji.has-variations > .button:hover:after,
-.emoji.has-variations > .button:focus-visible:after {
+.emoji.with-variations > .button:hover:after,
+.emoji.with-variations > .button:focus-visible:after {
   border-color: var(--emoji-variation-marker-border-color-hover);
 }
 

@@ -1,15 +1,15 @@
 <div class="emoji-picker">
-  <div class="tabs-wrapper">
-    <div class="tabs"></div>
+  <div class="tabs-wrapper" part="tabs-wrapper">
+    <div class="tabs" part="tabs"></div>
   </div>
-  <scrollable-component class="content">
-    <div class="title-bar">
-      <div class="title"></div>
-      <input class="search-input" autocomplete="off" spellcheck="false">
+  <scrollable-component class="content" part="content" exportparts="scrollbar, scrollbar-track, scrollbar-thumb, active">
+    <div class="title-bar" part="title-bar">
+      <div class="title" part="title"></div>
+      <input class="search-input" part="search-input" autocomplete="off" spellcheck="false">
     </div>
-    <div class="emojis-wrapper">
-      <div class="emojis"></div>
+    <div class="emojis-wrapper" part="emojis-wrapper">
+      <div class="emojis" part="emojis"></div>
     </div>
-    <div class="backdrop hidden"></div>
+    <div class="backdrop hidden" part="backdrop"></div>
   </scrollable-component>
 </div>
