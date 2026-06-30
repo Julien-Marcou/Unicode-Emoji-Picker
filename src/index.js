@@ -46,9 +46,9 @@ export class EmojiPickerElement extends HTMLElement {
   #baseEmojiVariationsGap = 4;
   #scrollToEmojiViewportMargin = 4;
   #groupFilterElements = new Map();
-  #groupElements = new Map();
   #baseEmojiElements = new Map();
   #baseEmojiVariationsElements = new Map();
+  #renderFrameRequestId = null;
 
   #groupFiltersElement;
   #contentElement;
@@ -89,17 +89,17 @@ export class EmojiPickerElement extends HTMLElement {
     const emojiPickerContent = emojiPickerTemplate.content.cloneNode(true);
     const emojiPickerElement = emojiPickerContent.querySelector('.emoji-picker');
 
-    this.#buildTitleBar(emojiPickerElement);
     this.#buildEmojiGroupFilters(emojiPickerElement);
-    this.#buildEmojiGroups(emojiPickerElement);
+    this.#buildTitleBar(emojiPickerElement);
+    this.#buildContent(emojiPickerElement);
 
     this.attachShadow({mode: 'open'});
-    this.shadowRoot.appendChild(emojiPickerContent);
     this.shadowRoot.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
         this.#closeVariationsPanel();
       }
     }, { passive: true });
+    this.shadowRoot.appendChild(emojiPickerContent);
   }
 
   #buildTitleBar(emojiPickerElement) {
@@ -114,48 +114,43 @@ export class EmojiPickerElement extends HTMLElement {
 
   #buildEmojiGroupFilters(emojiPickerElement) {
     this.#groupFiltersElement = emojiPickerElement.querySelector('.group-filters');
+    const groupFilterElements = [];
     for (const [groupKey, group] of this.#groups) {
       const groupFilterContent = emojiGroupFilterTemplate.content.cloneNode(true);
       const groupFilterElement = groupFilterContent.querySelector('.group-filter');
-      this.#groupFilterElements.set(group, groupFilterElement);
+      this.#groupFilterElements.set(groupKey, groupFilterElement);
       const groupFilterButton = groupFilterContent.querySelector('.button');
       groupFilterButton.innerHTML = group.emoji;
       groupFilterButton.setAttribute('title', group.title);
       groupFilterButton.addEventListener('click', () => {
         this.selectGroup(groupKey);
       }, { passive: true });
-      this.#groupFiltersElement.appendChild(groupFilterContent);
+      groupFilterElements.push(groupFilterElement);
     }
+    this.#groupFiltersElement.replaceChildren(...groupFilterElements);
   }
 
-  #buildEmojiGroups(emojiPickerElement) {
+  #buildContent(emojiPickerElement) {
     this.#contentElement = emojiPickerElement.querySelector('.content');
     this.#resultsElement = this.#contentElement.querySelector('.results');
     this.#backdropElement = this.#contentElement.querySelector('.backdrop');
-    for (const [groupKey, group] of this.#groups) {
-      if (groupKey === 'search') {
-        continue;
-      }
-      const groupContent = emojiGroupTemplate.content.cloneNode(true);
-      const groupElement = groupContent.querySelector('.group');
-      this.#groupElements.set(group, groupElement);
-      this.#resultsElement.appendChild(groupContent);
-    }
   }
 
   #buildEmojis() {
     this.#closeVariationsPanel();
     this.#baseEmojiElements = new Map();
     this.#baseEmojiVariationsElements = new Map();
+
+    const emojiElements = [];
     for (const [groupKey, group] of this.#groups) {
       if (groupKey !== 'search') {
-        const groupElement = this.#groupElements.get(group);
-        groupElement.innerHTML = '';
         for (const baseEmoji of this.#emojis[groupKey]) {
-          groupElement.appendChild(this.#buildBaseEmoji(baseEmoji));
+          emojiElements.push(this.#buildBaseEmoji(baseEmoji));
         }
       }
     }
+    this.#resultsElement.replaceChildren(...emojiElements);
+
     if (this.#activeGroupKey === 'search') {
       this.searchEmoji(this.#searchInputElement.value);
     }
@@ -166,6 +161,7 @@ export class EmojiPickerElement extends HTMLElement {
     const baseEmojiContent = baseEmojiTemplate.content.cloneNode(true);
     const baseEmojiElement = baseEmojiContent.querySelector('.emoji');
     this.#baseEmojiElements.set(baseEmoji, baseEmojiElement);
+    baseEmojiElement.classList.add('hidden');
     baseEmojiElement.addEventListener('focusout', (event) => {
       if (this.#activeBaseEmoji) {
         const activeBaseEmojiElement = this.#baseEmojiElements.get(this.#activeBaseEmoji);
@@ -188,13 +184,15 @@ export class EmojiPickerElement extends HTMLElement {
       const emojiVariationsElement = baseEmojiContent.querySelector('.variations');
       this.#baseEmojiVariationsElements.set(baseEmoji, emojiVariationsElement);
       // Include base emoji when building variations panel
+      const emojiVariationElements = [];
       for (const emojiVariation of [baseEmoji, ...baseEmoji.variations]) {
         // Add `base` attribute so that when we emit the "emoji-pick" event, when know the associated base emoji
         if (emojiVariation !== baseEmoji) {
           emojiVariation.base = baseEmoji;
         }
-        emojiVariationsElement.appendChild(this.#buildEmojiVariation(emojiVariation));
+        emojiVariationElements.push(this.#buildEmojiVariation(emojiVariation));
       }
+      emojiVariationsElement.replaceChildren(...emojiVariationElements);
     }
 
     return baseEmojiContent;
@@ -210,7 +208,7 @@ export class EmojiPickerElement extends HTMLElement {
       this.#selectEmoji(emojiVariation);
     }, { passive: true });
     emojiVariationButton.addEventListener('focus', () => {
-      this.#scrollToEmoji(emojiElement, emojiVariationElement);
+      this.#scrollToEmoji(emojiVariation, emojiVariationElement);
     }, { passive: true });
     return emojiVariationContent;
   }
@@ -222,7 +220,7 @@ export class EmojiPickerElement extends HTMLElement {
     }
     for (const [groupKey, group] of this.#groups) {
       if (translation[groupKey]) {
-        const groupFilterElement = this.#groupFilterElements.get(group);
+        const groupFilterElement = this.#groupFilterElements.get(groupKey);
         if (translation[groupKey].emoji) {
           group.emoji = translation[groupKey].emoji;
           groupFilterElement.querySelector('.button').innerHTML = group.emoji;
@@ -239,58 +237,63 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   selectGroup(groupKey) {
-    // Reset viewport
+    this.#resetViewport();
+    this.#selectGroupFilter(groupKey);
+    this.#selectGroupResults(groupKey);
+    this.#activeGroupKey = groupKey;
+  }
+
+  #resetViewport() {
     if (this.#activeBaseEmoji) {
       this.#closeVariationsPanel();
     }
     if (this.#activeGroupKey) {
       this.#contentElement.scrollTop = 0;
     }
+  }
 
+  #selectGroupFilter(groupKey) {
+    if (groupKey === this.#activeGroupKey) {
+      return;
+    }
+
+    // Update active group filter
+    if (this.#activeGroupKey) {
+      this.#groupFilterElements.get(this.#activeGroupKey).classList.remove('active');
+    }
+    this.#groupFilterElements.get(groupKey).classList.add('active');
+
+
+    // Update title
+    this.#titleElement.innerHTML = this.#groups.get(groupKey).title;
+    if (groupKey === 'search') {
+      this.#titleElement.classList.add('hidden');
+      this.#searchInputElement.classList.remove('hidden');
+    }
+    else{
+      this.#titleElement.classList.remove('hidden');
+      this.#searchInputElement.classList.add('hidden');
+    }
+  }
+
+  #selectGroupResults(groupKey) {
     // Reset search
-    if (this.#activeGroupKey === 'search') {
+    if (groupKey === 'search') {
+      this.#searchInputElement.focus();
       this.clearSearch();
     }
-
-    // Switch active state
-    if (groupKey !== this.#activeGroupKey) {
-
-      // Reset previous group filter
-      if (this.#activeGroupKey) {
-        const previousActiveGroup = this.#groups.get(this.#activeGroupKey);
-        this.#groupFilterElements.get(previousActiveGroup).classList.remove('active');
-        if (this.#activeGroupKey === 'search') {
-          for (const groupElement of this.#groupElements.values()) {
-            groupElement.classList.remove('active');
-          }
+    // Display correct emojis based on the active group
+    else if (groupKey !== this.#activeGroupKey) {
+      const emojiVisibilityChanges = Array.from(this.#baseEmojiElements.entries()).reduce((acc, [baseEmoji, baseEmojiElement]) => {
+        if (baseEmoji.category === groupKey) {
+          acc.visible.push(baseEmojiElement)
         }
         else {
-          this.#groupElements.get(previousActiveGroup).classList.remove('active');
+          acc.hidden.push(baseEmojiElement)
         }
-      }
-
-      // Set new group filter
-      this.#activeGroupKey = groupKey;
-      const activeGroup = this.#groups.get(this.#activeGroupKey);
-      this.#titleElement.innerHTML = activeGroup.title;
-      this.#groupFilterElements.get(activeGroup).classList.add('active');
-      if (this.#activeGroupKey === 'search') {
-        this.#titleElement.classList.add('hidden');
-        this.#searchInputElement.classList.remove('hidden');
-        for (const groupElement of this.#groupElements.values()) {
-          groupElement.classList.add('active');
-        }
-      }
-      else {
-        this.#titleElement.classList.remove('hidden');
-        this.#searchInputElement.classList.add('hidden');
-        this.#groupElements.get(activeGroup).classList.add('active');
-      }
-    }
-
-    // Focus search input if needed
-    if (this.#activeGroupKey === 'search') {
-      this.#searchInputElement.focus();
+        return acc;
+      }, { visible: [], hidden: [] });
+      this.#renderEmojiVisibilityChanges(emojiVisibilityChanges);
     }
   }
 
@@ -325,23 +328,27 @@ export class EmojiPickerElement extends HTMLElement {
     if (this.#searchInputElement.value !== query) {
       this.#searchInputElement.value = query;
     }
-    const searchTerms = query.toLowerCase().split(' ');
     this.#contentElement.scrollTop = 0;
-    for (const [baseEmoji, baseEmojiElement] of this.#baseEmojiElements) {
-      if(this.#emojiMatchTerms(baseEmoji, searchTerms)) {
-        baseEmojiElement.classList.remove('hidden');
+    const searchTerms = query.toLowerCase().split(' ');
+    const emojiVisibilityChanges = Array.from(this.#baseEmojiElements.entries()).reduce((acc, [baseEmoji, baseEmojiElement]) => {
+      if (this.#emojiMatchTerms(baseEmoji, searchTerms)) {
+        acc.visible.push(baseEmojiElement)
       }
       else {
-        baseEmojiElement.classList.add('hidden');
+        acc.hidden.push(baseEmojiElement)
       }
-    }
+      return acc;
+    }, { visible: [], hidden: [] });
+    this.#renderEmojiVisibilityChanges(emojiVisibilityChanges);
   }
 
   clearSearch() {
     this.#searchInputElement.value = '';
-    for (const [baseEmoji, baseEmojiElement] of this.#baseEmojiElements) {
-      baseEmojiElement.classList.remove('hidden');
-    }
+    const emojiVisibilityChanges = {
+      visible: Array.from(this.#baseEmojiElements.values()),
+      hidden: [],
+    };
+    this.#renderEmojiVisibilityChanges(emojiVisibilityChanges);
   }
 
   #emojiMatchTerms(emoji, searchTerms) {
@@ -452,17 +459,40 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   focusContent(skipSearchInput = false) {
-    if (this.#activeGroupKey === 'search') {
-      if (skipSearchInput) {
-        this.#resultsElement.querySelector('button').focus();
-      }
-      else {
-        this.#searchInputElement.focus();
-      }
+    if (this.#activeGroupKey === 'search' && !skipSearchInput) {
+      this.#searchInputElement.focus();
     }
     else {
-      this.#groupElements.get(this.#activeGroupKey).querySelector('button').focus();
+      this.#contentElement.querySelector('.results > .emoji:not(.hidden) > button').focus();
     }
+  }
+
+  #renderEmojiVisibilityChanges(emojiVisibilityChanges) {
+    // We split the load over multiple frames to make the component visualy more responsive
+    if (this.#renderFrameRequestId !== null) {
+      cancelAnimationFrame(this.#renderFrameRequestId);
+    }
+    // First frame, hide everything
+    this.#renderFrameRequestId = requestAnimationFrame(() => {
+      this.#renderFrameRequestId = null;
+      emojiVisibilityChanges.hidden.forEach((baseEmojiElement) => {
+        baseEmojiElement.classList.add('hidden');
+      });
+      // Second frame, show first 120 emojis
+      this.#renderFrameRequestId = requestAnimationFrame(() => {
+        this.#renderFrameRequestId = null;
+        emojiVisibilityChanges.visible.splice(0, 120).forEach((baseEmojiElement) => {
+          baseEmojiElement.classList.remove('hidden');
+        });
+        // Third frame, show the rest of the emojis
+        this.#renderFrameRequestId = requestAnimationFrame(() => {
+          this.#renderFrameRequestId = null;
+          emojiVisibilityChanges.visible.forEach((baseEmojiElement) => {
+            baseEmojiElement.classList.remove('hidden');
+          });
+        });
+      });
+    });
   }
 }
 

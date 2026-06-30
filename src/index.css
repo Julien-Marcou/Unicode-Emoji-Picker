@@ -269,18 +269,15 @@
   grid-template-columns: repeat(auto-fill, minmax(1.85em, 1fr));
   grid-gap: 0.2em;
 }
-.group {
-  display: none;
-}
-.group.active {
-  display: contents;
-}
 
 /* Emojis */
 .emoji {
   display: flex;
   align-items: center;
   justify-content: center;
+  text-rendering: optimizeSpeed;
+  contain: strict;
+  contain-intrinsic-size: 1.85em 1.85em;
 }
 .emoji > .button {
   display: block;
@@ -304,6 +301,7 @@
 }
 .emoji.active {
   z-index: 2;
+  contain: size layout style;
 }
 .emoji.has-variations {
   position: relative;
