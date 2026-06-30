@@ -228,6 +228,7 @@
   margin-top: -1px;
   background-color: var(--title-bar-fill-color);
   backdrop-filter: blur(6px);
+  box-shadow: 0 4px 4px var(--fill-color) inset;
 }
 .title-bar .title {
   overflow: hidden;
