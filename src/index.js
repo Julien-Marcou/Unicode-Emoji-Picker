@@ -185,7 +185,7 @@ export class EmojiPickerElement extends HTMLElement {
         if (emojiVariation !== baseEmoji) {
           emojiVariation.base = baseEmoji;
         }
-        emojiVariationElements.push(this.#buildEmojiVariation(emojiVariation));
+        emojiVariationElements.push(this.#buildEmojiVariation(baseEmojiElement, emojiVariation));
       }
       emojiVariationsElement.replaceChildren(...emojiVariationElements);
     }
@@ -193,7 +193,7 @@ export class EmojiPickerElement extends HTMLElement {
     return baseEmojiContent;
   }
 
-  #buildEmojiVariation(emojiVariation) {
+  #buildEmojiVariation(baseEmojiElement, emojiVariation) {
     const emojiVariationContent = emojiTemplate.content.cloneNode(true);
     const emojiVariationElement = emojiVariationContent.querySelector('.emoji');
     const emojiVariationButton = emojiVariationContent.querySelector('.button');
@@ -203,7 +203,7 @@ export class EmojiPickerElement extends HTMLElement {
       this.#selectEmoji(emojiVariation);
     }, { passive: true });
     emojiVariationButton.addEventListener('focus', () => {
-      this.#scrollToEmoji(emojiVariation, emojiVariationElement);
+      this.#scrollToEmoji(baseEmojiElement, emojiVariationElement);
     }, { passive: true });
     return emojiVariationContent;
   }
