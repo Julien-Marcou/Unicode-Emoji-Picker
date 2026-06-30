@@ -11,8 +11,8 @@
   --title-bar-height: 3em;
   --title-bar-padding: 1.1em;
 
-  --results-padding: 0.8em;
-  --results-gap: 0.2em;
+  --emojis-padding: 0.8em;
+  --emojis-gap: 0.2em;
   --emoji-size: 1.85em;
   --min-emoji-col-count: 6;
   --max-emoji-col-count: 11;
@@ -56,13 +56,13 @@
   --vertical-tabs-width: 0px;
 
   /* Width shouldn't be lower than 6 emojis & 4 paddings to properly display floating variation panels */
-  min-width: calc(var(--emoji-size) * var(--min-emoji-col-count) + var(--results-gap) * (var(--min-emoji-col-count) - 1) + 4 * var(--results-padding) + var(--vertical-tabs-width));
-  width: calc(var(--emoji-size) * var(--max-emoji-col-count) + var(--results-gap) * (var(--max-emoji-col-count) - 1) +  2 * var(--results-padding) + var(--vertical-tabs-width));
+  min-width: calc(var(--emoji-size) * var(--min-emoji-col-count) + var(--emojis-gap) * (var(--min-emoji-col-count) - 1) + 4 * var(--emojis-padding) + var(--vertical-tabs-width));
+  width: calc(var(--emoji-size) * var(--max-emoji-col-count) + var(--emojis-gap) * (var(--max-emoji-col-count) - 1) +  2 * var(--emojis-padding) + var(--vertical-tabs-width));
   max-width: 100vw;
 
   /* Height can take into account an additional gap so that by default the lowest visible emoji isn't on the edge of the viewport */
-  min-height: calc((var(--emoji-size) + var(--results-gap)) * var(--min-emoji-row-count) + var(--horizontal-tabs-height) + var(--title-bar-height));
-  height: calc((var(--emoji-size) + var(--results-gap)) * var(--max-emoji-row-count) + var(--horizontal-tabs-height) + var(--title-bar-height));
+  min-height: calc((var(--emoji-size) + var(--emojis-gap)) * var(--min-emoji-row-count) + var(--horizontal-tabs-height) + var(--title-bar-height));
+  height: calc((var(--emoji-size) + var(--emojis-gap)) * var(--max-emoji-row-count) + var(--horizontal-tabs-height) + var(--title-bar-height));
   max-height: 100vh;
 }
 :host([tabs-position="left"]),
@@ -261,14 +261,14 @@
 }
 
 /* Emoji grid */
-.results-wrapper {
-  padding: 0 var(--results-padding) var(--results-padding);
+.emojis-wrapper {
+  padding: 0 var(--emojis-padding) var(--emojis-padding);
 }
-.results {
+.emojis {
   position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--emoji-size), 1fr));
-  gap: var(--results-gap);
+  gap: var(--emojis-gap);
 }
 
 /* Emojis */
@@ -348,10 +348,10 @@
   position: absolute;
   display: none;
   grid-template-columns: repeat(auto-fit, minmax(var(--emoji-size), 1fr));
-  gap: var(--results-gap);
-  padding: var(--results-padding);
+  gap: var(--emojis-gap);
+  padding: var(--emojis-padding);
    /* We show 6 variations per row as there is 6 skin tones */
-  max-width: calc(var(--emoji-size) * 6 + var(--results-gap) * 5 + var(--results-padding) * 2);
+  max-width: calc(var(--emoji-size) * 6 + var(--emojis-gap) * 5 + var(--emojis-padding) * 2);
   top: 0;
   left: 0;
   background-color: var(--variations-fill-color);
