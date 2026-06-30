@@ -214,7 +214,7 @@
 /* Title/search bar*/
 .title-bar {
   position: sticky;
-  z-index: 4;
+  z-index: 3;
   top: -1px;
   display: flex;
   align-items: center;
@@ -346,7 +346,6 @@
 }
 .variations {
   position: absolute;
-  z-index: 3;
   display: none;
   grid-template-columns: repeat(auto-fit, minmax(1.85em, 1fr));
   grid-gap: 0.2em;
