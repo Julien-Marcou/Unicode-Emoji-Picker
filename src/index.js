@@ -4,6 +4,7 @@ import { TABS } from './tabs';
 
 const defaultVersion = '12.0';
 const defaultTag = 'unicode-emoji-picker';
+const defaultTabKey = 'face-emotion';
 
 const emojiPickerTemplate = document.createElement('template');
 emojiPickerTemplate.innerHTML = '<style>{{index.css}}</style>{{emoji-picker.html}}';
@@ -137,9 +138,8 @@ export class EmojiPickerElement extends HTMLElement {
       }
     }
     this.#resultsElement.replaceChildren(...emojiElements);
-
-    if (this.#selectedTabKey === 'search') {
-      this.searchEmoji(this.#searchInputElement.value);
+    if (this.#selectedTabKey) {
+      this.#reloadSelectedTab();
     }
   }
 
@@ -224,9 +224,24 @@ export class EmojiPickerElement extends HTMLElement {
 
   selectTab(tabKey) {
     this.#resetViewport();
-    this.#selectTab(tabKey);
-    this.#selectResults(tabKey);
+    this.#updateTabsAndTitle(tabKey);
+    if (tabKey === 'search') {
+      this.#resetSearch();
+    }
+    else if (tabKey !== this.#selectedTabKey) {
+      this.#updateEmojiResults(tabKey);
+    }
     this.#selectedTabKey = tabKey;
+  }
+
+  #reloadSelectedTab() {
+    this.#resetViewport();
+    if (this.#selectedTabKey === 'search') {
+      this.searchEmoji(this.#searchInputElement.value);
+    }
+    else {
+      this.#updateEmojiResults(this.#selectedTabKey);
+    }
   }
 
   #resetViewport() {
@@ -238,7 +253,12 @@ export class EmojiPickerElement extends HTMLElement {
     }
   }
 
-  #selectTab(tabKey) {
+  #resetSearch() {
+    this.#searchInputElement.focus();
+    this.clearSearch();
+  }
+
+  #updateTabsAndTitle(tabKey) {
     if (tabKey === this.#selectedTabKey) {
       return;
     }
@@ -262,25 +282,17 @@ export class EmojiPickerElement extends HTMLElement {
     }
   }
 
-  #selectResults(tabKey) {
-    // Reset search
-    if (tabKey === 'search') {
-      this.#searchInputElement.focus();
-      this.clearSearch();
-    }
-    // Display correct emojis based on the active tab
-    else if (tabKey !== this.#selectedTabKey) {
-      const emojiVisibilityChanges = Array.from(this.#baseEmojiElements.entries()).reduce((acc, [baseEmoji, baseEmojiElement]) => {
-        if (baseEmoji.category === tabKey) {
-          acc.visible.push(baseEmojiElement)
-        }
-        else {
-          acc.hidden.push(baseEmojiElement)
-        }
-        return acc;
-      }, { visible: [], hidden: [] });
-      this.#renderEmojiVisibilityChanges(emojiVisibilityChanges);
-    }
+  #updateEmojiResults(tabKey) {
+    const emojiVisibilityChanges = Array.from(this.#baseEmojiElements.entries()).reduce((acc, [baseEmoji, baseEmojiElement]) => {
+      if (baseEmoji.category === tabKey) {
+        acc.visible.push(baseEmojiElement)
+      }
+      else {
+        acc.hidden.push(baseEmojiElement)
+      }
+      return acc;
+    }, { visible: [], hidden: [] });
+    this.#renderEmojiVisibilityChanges(emojiVisibilityChanges);
   }
 
   #selectBaseEmoji(baseEmoji) {
@@ -329,6 +341,9 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   clearSearch() {
+    if (this.#searchInputElement.value === '') {
+      return;
+    }
     this.#searchInputElement.value = '';
     const emojiVisibilityChanges = {
       visible: Array.from(this.#baseEmojiElements.values()),
