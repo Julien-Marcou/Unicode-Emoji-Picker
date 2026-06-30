@@ -1,4 +1,4 @@
-export const TRANSLATIONS = [
+export const TABS = [
   [
     'search',
     {

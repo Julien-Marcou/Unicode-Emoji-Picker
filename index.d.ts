@@ -1,50 +1,17 @@
-import { Emoji } from 'unicode-emoji';
+import { Emoji, Category } from 'unicode-emoji';
 
-export type EmojiGroupKey = 'search' | 'face-emotion' | 'food-drink' | 'animals-nature' | 'activities-events' | 'person-people' | 'travel-places' | 'objects' | 'symbols' | 'flags';
+export type EmojiTabKey = Category | 'search';
 
-export type EmojiPickerTranslation = {
-  'search'?: {
-    emoji?: string,
-    title?: string,
-    inputPlaceholder?: string,
-  },
-  'face-emotion'?: {
-    emoji?: string,
-    title?: string,
-  },
-  'food-drink'?: {
-    emoji?: string,
-    title?: string,
-  },
-  'animals-nature'?: {
-    emoji?: string,
-    title?: string,
-  },
-  'activities-events'?: {
-    emoji?: string,
-    title?: string,
-  },
-  'person-people'?: {
-    emoji?: string,
-    title?: string,
-  },
-  'travel-places'?: {
-    emoji?: string,
-    title?: string,
-  },
-  'objects'?: {
-    emoji?: string,
-    title?: string,
-  },
-  'symbols'?: {
-    emoji?: string,
-    title?: string,
-  },
-  'flags'?: {
-    emoji?: string,
-    title?: string,
-  },
+export type EmojiCategoryTabTranslation = {
+  emoji?: string;
+  title?: string;
 };
+
+export type EmojiSearchTabTranslation = EmojiCategoryTabTranslation & {
+  inputPlaceholder?: string;
+};
+
+export type EmojiPickerTranslation = Partial<{ search: EmojiSearchTabTranslation } & Record<Category, EmojiCategoryTabTranslation>>;
 
 export type EmojiPickEvent = CustomEvent<Emoji>;
 
@@ -53,8 +20,8 @@ export interface EmojiPickerEventMap extends HTMLElementEventMap {
 }
 
 export class EmojiPickerElement extends HTMLElement {
-  public readonly selectedGroup: EmojiGroupKey;
-  public selectGroup(groupKey: EmojiGroupKey): void;
+  public readonly selectedTab: EmojiTabKey;
+  public selectTab(tabKey: EmojiTabKey): void;
   public searchEmoji(query: string): void;
   public clearSearch(): void;
   public setTranslation(translation: EmojiPickerTranslation): void;

@@ -1,22 +1,17 @@
 import { defineScrollableComponent, isScrollableComponentDefined, whenScrollableComponentDefined } from 'scrollable-component';
 import { getEmojisGroupedBy } from 'unicode-emoji';
-import { TRANSLATIONS } from './translations';
+import { TABS } from './tabs';
 
 const defaultVersion = '12.0';
 
 const emojiPickerTemplate = document.createElement('template');
 emojiPickerTemplate.innerHTML = `<style>{{COMPONENT_CSS}}</style>{{COMPONENT_HTML}}`;
 
-const emojiGroupFilterTemplate = document.createElement('template');
-emojiGroupFilterTemplate.innerHTML = `
-  <div class="group-filter">
+const emojiTabTemplate = document.createElement('template');
+emojiTabTemplate.innerHTML = `
+  <div class="tab">
     <button type="button" class="button"></button>
   </div>
-`;
-
-const emojiGroupTemplate = document.createElement('template');
-emojiGroupTemplate.innerHTML = `
-  <div class="group"></div>
 `;
 
 const emojiTemplate = document.createElement('template');
@@ -38,27 +33,27 @@ export class EmojiPickerElement extends HTMLElement {
 
   static observedAttributes = ['version'];
 
-  #groups = new Map(TRANSLATIONS);
+  #tabs = new Map(TABS);
 
-  #activeGroupKey = null;
+  #selectedTabKey = null;
   #emojis = null;
   #activeBaseEmoji = null;
   #baseEmojiVariationsGap = 4;
   #scrollToEmojiViewportMargin = 4;
-  #groupFilterElements = new Map();
+  #tabElements = new Map();
   #baseEmojiElements = new Map();
   #baseEmojiVariationsElements = new Map();
   #renderFrameRequestId = null;
 
-  #groupFiltersElement;
+  #tabsElement;
   #contentElement;
   #resultsElement;
   #backdropElement;
   #titleElement;
   #searchInputElement;
 
-  get selectedGroup() {
-    return this.#activeGroupKey;
+  get selectedTab() {
+    return this.#selectedTabKey;
   }
 
   constructor() {
@@ -70,11 +65,11 @@ export class EmojiPickerElement extends HTMLElement {
     if (!this.hasAttribute('version')) {
       this.setAttribute('version', defaultVersion);
     }
-    if (this.hasAttribute('default-group')) {
-      this.selectGroup(this.getAttribute('default-group'));
+    if (this.hasAttribute('default-tab')) {
+      this.selectTab(this.getAttribute('default-tab'));
     }
     else {
-      this.selectGroup('face-emotion');
+      this.selectTab('face-emotion');
     }
   }
 
@@ -89,7 +84,7 @@ export class EmojiPickerElement extends HTMLElement {
     const emojiPickerContent = emojiPickerTemplate.content.cloneNode(true);
     const emojiPickerElement = emojiPickerContent.querySelector('.emoji-picker');
 
-    this.#buildEmojiGroupFilters(emojiPickerElement);
+    this.#buildEmojiTabs(emojiPickerElement);
     this.#buildTitleBar(emojiPickerElement);
     this.#buildContent(emojiPickerElement);
 
@@ -112,22 +107,22 @@ export class EmojiPickerElement extends HTMLElement {
     }, { passive: true });
   }
 
-  #buildEmojiGroupFilters(emojiPickerElement) {
-    this.#groupFiltersElement = emojiPickerElement.querySelector('.group-filters');
-    const groupFilterElements = [];
-    for (const [groupKey, group] of this.#groups) {
-      const groupFilterContent = emojiGroupFilterTemplate.content.cloneNode(true);
-      const groupFilterElement = groupFilterContent.querySelector('.group-filter');
-      this.#groupFilterElements.set(groupKey, groupFilterElement);
-      const groupFilterButton = groupFilterContent.querySelector('.button');
-      groupFilterButton.innerHTML = group.emoji;
-      groupFilterButton.setAttribute('title', group.title);
-      groupFilterButton.addEventListener('click', () => {
-        this.selectGroup(groupKey);
+  #buildEmojiTabs(emojiPickerElement) {
+    this.#tabsElement = emojiPickerElement.querySelector('.tabs');
+    const tabElements = [];
+    for (const [tabKey, tab] of this.#tabs) {
+      const tabContent = emojiTabTemplate.content.cloneNode(true);
+      const tabElement = tabContent.querySelector('.tab');
+      this.#tabElements.set(tabKey, tabElement);
+      const tabButton = tabContent.querySelector('.button');
+      tabButton.innerHTML = tab.emoji;
+      tabButton.setAttribute('title', tab.title);
+      tabButton.addEventListener('click', () => {
+        this.selectTab(tabKey);
       }, { passive: true });
-      groupFilterElements.push(groupFilterElement);
+      tabElements.push(tabElement);
     }
-    this.#groupFiltersElement.replaceChildren(...groupFilterElements);
+    this.#tabsElement.replaceChildren(...tabElements);
   }
 
   #buildContent(emojiPickerElement) {
@@ -142,16 +137,16 @@ export class EmojiPickerElement extends HTMLElement {
     this.#baseEmojiVariationsElements = new Map();
 
     const emojiElements = [];
-    for (const [groupKey, group] of this.#groups) {
-      if (groupKey !== 'search') {
-        for (const baseEmoji of this.#emojis[groupKey]) {
+    for (const [tabKey, tab] of this.#tabs) {
+      if (tabKey !== 'search') {
+        for (const baseEmoji of this.#emojis[tabKey]) {
           emojiElements.push(this.#buildBaseEmoji(baseEmoji));
         }
       }
     }
     this.#resultsElement.replaceChildren(...emojiElements);
 
-    if (this.#activeGroupKey === 'search') {
+    if (this.#selectedTabKey === 'search') {
       this.searchEmoji(this.#searchInputElement.value);
     }
   }
@@ -218,55 +213,55 @@ export class EmojiPickerElement extends HTMLElement {
     if (translation.search && translation.search.inputPlaceholder) {
       this.#searchInputElement.placeholder = translation.search.inputPlaceholder;
     }
-    for (const [groupKey, group] of this.#groups) {
-      if (translation[groupKey]) {
-        const groupFilterElement = this.#groupFilterElements.get(groupKey);
-        if (translation[groupKey].emoji) {
-          group.emoji = translation[groupKey].emoji;
-          groupFilterElement.querySelector('.button').innerHTML = group.emoji;
+    for (const [tabKey, tab] of this.#tabs) {
+      if (translation[tabKey]) {
+        const tabElement = this.#tabElements.get(tabKey);
+        if (translation[tabKey].emoji) {
+          tab.emoji = translation[tabKey].emoji;
+          tabElement.querySelector('.button').innerHTML = tab.emoji;
         }
-        if (translation[groupKey].title) {
-          group.title = translation[groupKey].title;
-          groupFilterElement.querySelector('.button').setAttribute('title', group.title);
+        if (translation[tabKey].title) {
+          tab.title = translation[tabKey].title;
+          tabElement.querySelector('.button').setAttribute('title', tab.title);
         }
       }
     }
-    if (this.#activeGroupKey) {
-      this.#titleElement.innerHTML = this.#groups.get(this.#activeGroupKey).title;
+    if (this.#selectedTabKey) {
+      this.#titleElement.innerHTML = this.#tabs.get(this.#selectedTabKey).title;
     }
   }
 
-  selectGroup(groupKey) {
+  selectTab(tabKey) {
     this.#resetViewport();
-    this.#selectGroupFilter(groupKey);
-    this.#selectGroupResults(groupKey);
-    this.#activeGroupKey = groupKey;
+    this.#selectTab(tabKey);
+    this.#selectResults(tabKey);
+    this.#selectedTabKey = tabKey;
   }
 
   #resetViewport() {
     if (this.#activeBaseEmoji) {
       this.#closeVariationsPanel();
     }
-    if (this.#activeGroupKey) {
+    if (this.#selectedTabKey) {
       this.#contentElement.scrollTop = 0;
     }
   }
 
-  #selectGroupFilter(groupKey) {
-    if (groupKey === this.#activeGroupKey) {
+  #selectTab(tabKey) {
+    if (tabKey === this.#selectedTabKey) {
       return;
     }
 
-    // Update active group filter
-    if (this.#activeGroupKey) {
-      this.#groupFilterElements.get(this.#activeGroupKey).classList.remove('active');
+    // Update active tab
+    if (this.#selectedTabKey) {
+      this.#tabElements.get(this.#selectedTabKey).classList.remove('active');
     }
-    this.#groupFilterElements.get(groupKey).classList.add('active');
+    this.#tabElements.get(tabKey).classList.add('active');
 
 
     // Update title
-    this.#titleElement.innerHTML = this.#groups.get(groupKey).title;
-    if (groupKey === 'search') {
+    this.#titleElement.innerHTML = this.#tabs.get(tabKey).title;
+    if (tabKey === 'search') {
       this.#titleElement.classList.add('hidden');
       this.#searchInputElement.classList.remove('hidden');
     }
@@ -276,16 +271,16 @@ export class EmojiPickerElement extends HTMLElement {
     }
   }
 
-  #selectGroupResults(groupKey) {
+  #selectResults(tabKey) {
     // Reset search
-    if (groupKey === 'search') {
+    if (tabKey === 'search') {
       this.#searchInputElement.focus();
       this.clearSearch();
     }
-    // Display correct emojis based on the active group
-    else if (groupKey !== this.#activeGroupKey) {
+    // Display correct emojis based on the active tab
+    else if (tabKey !== this.#selectedTabKey) {
       const emojiVisibilityChanges = Array.from(this.#baseEmojiElements.entries()).reduce((acc, [baseEmoji, baseEmojiElement]) => {
-        if (baseEmoji.category === groupKey) {
+        if (baseEmoji.category === tabKey) {
           acc.visible.push(baseEmojiElement)
         }
         else {
@@ -455,11 +450,11 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   focusHeader() {
-    this.#groupFiltersElement.querySelector('button').focus();
+    this.#tabsElement.querySelector('button').focus();
   }
 
   focusContent(skipSearchInput = false) {
-    if (this.#activeGroupKey === 'search' && !skipSearchInput) {
+    if (this.#selectedTabKey === 'search' && !skipSearchInput) {
       this.#searchInputElement.focus();
     }
     else {
