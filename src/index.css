@@ -179,7 +179,7 @@
   transition: background-color var(--transition);
 }
 .tab .button:hover,
-.tab .button:focus {
+.tab .button:focus-visible {
   background-color: var(--tab-fill-color-hover);
 }
 
@@ -291,7 +291,7 @@
   transition: background-color var(--transition);
 }
 .emoji > .button:hover,
-.emoji > .button:focus {
+.emoji > .button:focus-visible {
   background-color: var(--emoji-fill-color-hover);
   border-color: var(--emoji-border-color-hover);
 }
@@ -325,7 +325,7 @@
   border-left: 0 none;
 }
 .emoji.has-variations > .button:hover:after,
-.emoji.has-variations > .button:focus:after {
+.emoji.has-variations > .button:focus-visible:after {
   border-color: var(--emoji-variation-marker-border-color-hover);
 }
 
