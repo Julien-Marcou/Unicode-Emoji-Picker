@@ -106,6 +106,7 @@
 
 /* Tabs bar */
 .tabs-wrapper {
+  display: flex;
   flex-shrink: 0;
   overflow-x: auto;
   overflow-y: hidden;
@@ -117,6 +118,7 @@
 }
 :host([tabs-position="left"]) .tabs-wrapper,
 :host([tabs-position="right"]) .tabs-wrapper {
+  flex-direction: column;
   overflow-x: hidden;
   overflow-y: auto;
 }
