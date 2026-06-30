@@ -246,7 +246,7 @@
   line-height: 1.6em;
   text-overflow: ellipsis;
   border: 0 solid var(--search-input-border-color);
-  border-bottom: 4px;
+  border-bottom-width: 4px;
   background-color: transparent;
   border-radius: 0;
   outline: none;
