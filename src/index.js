@@ -44,6 +44,7 @@ export class EmojiPickerElement extends HTMLElement {
   #titleElement;
   #searchInputElement;
   #firstEmojiElement;
+  #intersectionObserver;
 
   get selectedTab() {
     return this.#selectedTabKey;
@@ -51,7 +52,7 @@ export class EmojiPickerElement extends HTMLElement {
 
   constructor() {
     super();
-    this.#buildComponent()
+    this.#buildComponent();
   }
 
   connectedCallback() {
@@ -64,6 +65,10 @@ export class EmojiPickerElement extends HTMLElement {
     else {
       this.selectTab('face-emotion');
     }
+  }
+
+  disconnectedCallback() {
+    this.#intersectionObserver.disconnect();
   }
 
   attributeChangedCallback(attributeName, oldValue, newValue) {
@@ -122,6 +127,12 @@ export class EmojiPickerElement extends HTMLElement {
     this.#contentElement = emojiPickerElement.querySelector('.content');
     this.#emojisElement = this.#contentElement.querySelector('.emojis');
     this.#backdropElement = this.#contentElement.querySelector('.backdrop');
+    this.#intersectionObserver = new IntersectionObserver((entries) => {
+      this.#load(entries);
+    }, {
+      root: this.#contentElement,
+      thresholds: [0],
+    });
   }
 
   #buildEmojis() {
@@ -465,38 +476,42 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   #renderEmojiVisibilityChanges(emojiVisibilityChanges) {
-    // Remember the first visible emoji and make it directly visible, so we can focus it easily
-    this.#firstEmojiElement = emojiVisibilityChanges.visible.shift();
-    if (this.#firstEmojiElement) {
-      this.#firstEmojiElement.classList.remove('hidden');
-    }
+    // Remember the first visible emoji so we can focus it easily
+    this.#firstEmojiElement = emojiVisibilityChanges.visible[0];
 
-    // We split the load over multiple frames to make the component visualy more responsive
-    if (this.#renderFrameRequestId !== null) {
-      cancelAnimationFrame(this.#renderFrameRequestId);
-    }
-
-    // First frame, hide everything
-    this.#renderFrameRequestId = requestAnimationFrame(() => {
-      this.#renderFrameRequestId = null;
-      emojiVisibilityChanges.hidden.forEach((baseEmojiElement) => {
-        baseEmojiElement.classList.add('hidden');
-      });
-      // Second frame, show first 110 emojis
-      this.#renderFrameRequestId = requestAnimationFrame(() => {
-        this.#renderFrameRequestId = null;
-        emojiVisibilityChanges.visible.splice(0, 110).forEach((baseEmojiElement) => {
-          baseEmojiElement.classList.remove('hidden');
-        });
-        // Third frame, show the rest of the emojis
-        this.#renderFrameRequestId = requestAnimationFrame(() => {
-          this.#renderFrameRequestId = null;
-          emojiVisibilityChanges.visible.forEach((baseEmojiElement) => {
-            baseEmojiElement.classList.remove('hidden');
-          });
-        });
-      });
+    // Unobserve all hidden emojis
+    emojiVisibilityChanges.hidden.forEach((baseEmojiElement) => {
+      if (baseEmojiElement.classList.contains('hidden')) {
+        return;
+      }
+      baseEmojiElement.classList.add('hidden');
+      baseEmojiElement.classList.remove('lazy-load');
+      this.#intersectionObserver.unobserve(baseEmojiElement);
     });
+
+    // Observe all visible emojis to lazy load them when they intersect with the viewport
+    emojiVisibilityChanges.visible.forEach((baseEmojiElement, index) => {
+      if (!baseEmojiElement.classList.contains('hidden')) {
+        return;
+      }
+      baseEmojiElement.classList.add('lazy-load');
+      baseEmojiElement.classList.remove('hidden');
+      this.#intersectionObserver.observe(baseEmojiElement);
+    });
+  }
+
+  #load(entries) {
+    if (this.#firstEmojiElement) {
+      this.#firstEmojiElement.classList.remove('invisible');
+    }
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        entry.target.classList.remove('lazy-load');
+      }
+      else if (!entry.target.classList.contains('active')) {
+        entry.target.classList.add('lazy-load');
+      }
+    }
   }
 }
 

@@ -301,6 +301,14 @@
 .emoji.hidden {
   display: none;
 }
+/**
+ * For some reason, using "content-visibility: hidden" seems to have worse performances,
+ * and because windows 11 emojis are super heavy to render, just dynamically adding an "opacity: 0"
+ * when elements are outside of the viewport seems to greatly improve rendering speed
+ */
+.emoji.lazy-load {
+  opacity: 0;
+}
 .emoji.active {
   z-index: 2;
   contain: size layout style;
