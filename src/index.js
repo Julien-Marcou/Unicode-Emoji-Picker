@@ -79,7 +79,7 @@ export class EmojiPickerElement extends HTMLElement {
 
   attributeChangedCallback(attributeName, oldValue, newValue) {
     if (attributeName === 'version') {
-      this.#emojis = getEmojisGroupedBy('category', {versionAbove: newValue});
+      this.#emojis = getEmojisGroupedBy('category', { versionAbove: newValue ?? defaultVersion });
     }
     else if (attributeName === 'disable-variations') {
       this.#variationsDisabled = newValue === 'true';
