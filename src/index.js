@@ -272,9 +272,15 @@ export class EmojiPickerElement extends HTMLElement {
   #updateTabsAndTitle(tabKey) {
     // Update active tab
     if (this.#selectedTabKey) {
-      this.#tabElements.get(this.#selectedTabKey).classList.remove('active');
+      const previousTabElement = this.#tabElements.get(this.#selectedTabKey);
+      previousTabElement.classList.remove('active');
+      previousTabElement.part.remove('active');
+      previousTabElement.querySelector('button').part.remove('active');
     }
-    this.#tabElements.get(tabKey).classList.add('active');
+    const currentTabElement = this.#tabElements.get(tabKey);
+    currentTabElement.classList.add('active');
+    currentTabElement.part.add('active');
+    currentTabElement.querySelector('button').part.add('active');
 
 
     // Update title
@@ -372,6 +378,7 @@ export class EmojiPickerElement extends HTMLElement {
     const baseEmojiElement = this.#baseEmojiElements.get(this.#activeBaseEmoji);
     this.#backdropElement.classList.remove('hidden');
     baseEmojiElement.classList.add('active');
+    baseEmojiElement.querySelector('button').part.add('active');
     this.#updateVariationsPanel();
   }
 
@@ -383,6 +390,7 @@ export class EmojiPickerElement extends HTMLElement {
     this.#activeBaseEmoji = null;
     this.#backdropElement.classList.add('hidden');
     baseEmojiElement.classList.remove('active');
+    baseEmojiElement.querySelector('button').part.remove('active');
     this.#updateVariationsPanel();
   }
 
