@@ -42,6 +42,7 @@ export class EmojiPickerElement extends HTMLElement {
   #backdropElement;
   #titleElement;
   #searchInputElement;
+  #firstEmojiElement;
 
   get selectedTab() {
     return this.#selectedTabKey;
@@ -444,29 +445,39 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   focusContent(skipSearchInput = false) {
-    if (this.#selectedTabKey === 'search' && !skipSearchInput) {
+    if (this.#selectedTabKey === 'search' && (!skipSearchInput || !this.#firstEmojiElement)) {
       this.#searchInputElement.focus();
     }
+    else if (this.#firstEmojiElement) {
+      this.#firstEmojiElement.querySelector('button').focus();
+    }
     else {
-      this.#contentElement.querySelector('.results > .emoji:not(.hidden) > button').focus();
+      this.focusHeader();
     }
   }
 
   #renderEmojiVisibilityChanges(emojiVisibilityChanges) {
+    // Remember the first visible emoji and make it directly visible, so we can focus it easily
+    this.#firstEmojiElement = emojiVisibilityChanges.visible.shift();
+    if (this.#firstEmojiElement) {
+      this.#firstEmojiElement.classList.remove('hidden');
+    }
+
     // We split the load over multiple frames to make the component visualy more responsive
     if (this.#renderFrameRequestId !== null) {
       cancelAnimationFrame(this.#renderFrameRequestId);
     }
+
     // First frame, hide everything
     this.#renderFrameRequestId = requestAnimationFrame(() => {
       this.#renderFrameRequestId = null;
       emojiVisibilityChanges.hidden.forEach((baseEmojiElement) => {
         baseEmojiElement.classList.add('hidden');
       });
-      // Second frame, show first 120 emojis
+      // Second frame, show first 110 emojis
       this.#renderFrameRequestId = requestAnimationFrame(() => {
         this.#renderFrameRequestId = null;
-        emojiVisibilityChanges.visible.splice(0, 120).forEach((baseEmojiElement) => {
+        emojiVisibilityChanges.visible.splice(0, 110).forEach((baseEmojiElement) => {
           baseEmojiElement.classList.remove('hidden');
         });
         // Third frame, show the rest of the emojis
