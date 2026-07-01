@@ -26,7 +26,7 @@
 
   --tabs-border-color: #e4e4e4;
   --tab-fill-color-hover: #e9e9e9;
-  --tab-active-marker-border-color: #aaa;
+  --tab-active-marker-color: #aaa;
 
   --content-scrollbar-thumb-fill-color: #d7d7d7;
   --content-scrollbar-thumb-fill-color-hover: #aaa;
@@ -36,8 +36,8 @@
   --search-input-border-color-hover: #222;
 
   --emoji-border-color-hover: #d7d7d7;
-  --emoji-variation-marker-border-color: #d7d7d7;
-  --emoji-variation-marker-border-color-hover: #aaa;
+  --emoji-variation-marker-color: #d7d7d7;
+  --emoji-variation-marker-color-hover: #aaa;
 
   --variations-backdrop-fill-color: color-mix(in srgb, var(--fill-color), transparent 30%);
   --variations-fill-color: var(--fill-color);
@@ -155,7 +155,7 @@
   right: -0.1em;
   bottom: 0;
   height: 4px;
-  background-color: var(--tab-active-marker-border-color);
+  background-color: var(--tab-active-marker-color);
 }
 :host([tabs-position="left"]) .tab.active:after,
 :host([tabs-position="right"]) .tab.active:after {
@@ -331,13 +331,13 @@
   right: 0;
   width: 8px;
   height: 8px;
-  border: 4px solid var(--emoji-variation-marker-border-color);
+  border: 4px solid var(--emoji-variation-marker-color);
   border-top: 0 none;
   border-left: 0 none;
 }
 .emoji.with-variations > .button:hover:after,
 .emoji.with-variations > .button:focus-visible:after {
-  border-color: var(--emoji-variation-marker-border-color-hover);
+  border-color: var(--emoji-variation-marker-color-hover);
 }
 
 /* Emoji variations panel */
