@@ -141,6 +141,7 @@ export class EmojiPickerElement extends HTMLElement {
     }, {
       root: this.#contentElement,
       thresholds: [0],
+      rootMargin: '80px',
     });
   }
 
