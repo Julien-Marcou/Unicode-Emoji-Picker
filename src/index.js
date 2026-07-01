@@ -23,7 +23,7 @@ emojiVariationTemplate.innerHTML = '{{emoji-variation.html}}';
 
 export class EmojiPickerElement extends HTMLElement {
 
-  static observedAttributes = ['version'];
+  static observedAttributes = ['version', 'disable-variations'];
 
   #tabs = new Map(TABS);
 
@@ -36,6 +36,8 @@ export class EmojiPickerElement extends HTMLElement {
   #baseEmojiElements = new Map();
   #baseEmojiVariationsElements = new Map();
   #renderFrameRequestId = null;
+  #variationsDisabled = false;
+  #isConnected = false;
 
   #tabsElement;
   #contentElement;
@@ -65,6 +67,8 @@ export class EmojiPickerElement extends HTMLElement {
     else {
       this.selectTab('face-emotion');
     }
+    this.#isConnected = true;
+    this.#buildEmojis();
   }
 
   disconnectedCallback() {
@@ -74,6 +78,11 @@ export class EmojiPickerElement extends HTMLElement {
   attributeChangedCallback(attributeName, oldValue, newValue) {
     if (attributeName === 'version') {
       this.#emojis = getEmojisGroupedBy('category', {versionAbove: newValue});
+    }
+    else if (attributeName === 'disable-variations') {
+      this.#variationsDisabled = newValue === 'true';
+    }
+    if (this.#isConnected) {
       this.#buildEmojis();
     }
   }
@@ -155,7 +164,7 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   #buildBaseEmoji(baseEmoji) {
-    const baseEmojiTemplate = baseEmoji.variations ? emojiWithVariationsTemplate : emojiTemplate;
+    const baseEmojiTemplate = baseEmoji.variations && !this.#variationsDisabled ? emojiWithVariationsTemplate : emojiTemplate;
     const baseEmojiContent = baseEmojiTemplate.content.cloneNode(true);
     const baseEmojiElement = baseEmojiContent.querySelector('.emoji');
     this.#baseEmojiElements.set(baseEmoji, baseEmojiElement);
@@ -177,7 +186,7 @@ export class EmojiPickerElement extends HTMLElement {
       this.#scrollToEmoji(baseEmojiElement);
     }, { passive: true });
 
-    if (baseEmoji.variations) {
+    if (baseEmoji.variations && !this.#variationsDisabled) {
       const emojiVariationsElement = baseEmojiContent.querySelector('.variations');
       this.#baseEmojiVariationsElements.set(baseEmoji, emojiVariationsElement);
       // Include base emoji when building variations panel
@@ -313,7 +322,7 @@ export class EmojiPickerElement extends HTMLElement {
       this.#closeVariationsPanel();
     }
     else {
-      if (baseEmoji.variations) {
+      if (baseEmoji.variations && !this.#variationsDisabled) {
         this.#openVariationsPanel(baseEmoji);
       }
       else {
