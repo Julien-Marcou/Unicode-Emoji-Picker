@@ -409,6 +409,7 @@ export class EmojiPickerElement extends HTMLElement {
       return;
     }
     const baseEmojiElement = this.#baseEmojiElements.get(this.#activeBaseEmoji);
+    baseEmojiElement.querySelector('button').focus();
     this.#activeBaseEmoji = null;
     this.#backdropElement.classList.add('hidden');
     baseEmojiElement.classList.remove('active');
