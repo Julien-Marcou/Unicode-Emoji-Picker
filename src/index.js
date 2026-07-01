@@ -61,14 +61,16 @@ export class EmojiPickerElement extends HTMLElement {
     if (!this.hasAttribute('version')) {
       this.setAttribute('version', defaultVersion);
     }
+
+    this.#buildEmojis();
+    this.#isConnected = true;
+
     if (this.hasAttribute('default-tab')) {
       this.selectTab(this.getAttribute('default-tab'));
     }
     else {
       this.selectTab('face-emotion');
     }
-    this.#isConnected = true;
-    this.#buildEmojis();
   }
 
   disconnectedCallback() {
@@ -110,7 +112,7 @@ export class EmojiPickerElement extends HTMLElement {
     this.#searchInputElement = emojiTitleBarElement.querySelector('.search-input');
     this.#searchInputElement.placeholder = 'Search an Emoji...';
     this.#searchInputElement.addEventListener('input', () => {
-      this.searchEmoji(this.#searchInputElement.value);
+      this.#searchEmoji(this.#searchInputElement.value);
     }, { passive: true });
   }
 
@@ -247,7 +249,8 @@ export class EmojiPickerElement extends HTMLElement {
     this.#resetViewport();
     this.#updateTabsAndTitle(tabKey);
     if (tabKey === 'search') {
-      this.#resetSearch();
+      this.#searchInputElement.focus();
+      this.#clearSearch();
     }
     else if (tabKey !== this.#selectedTabKey) {
       this.#updateEmojis(tabKey);
@@ -258,7 +261,7 @@ export class EmojiPickerElement extends HTMLElement {
   #reloadSelectedTab() {
     this.#resetViewport();
     if (this.#selectedTabKey === 'search') {
-      this.searchEmoji(this.#searchInputElement.value);
+      this.#searchEmoji(this.#searchInputElement.value);
     }
     else {
       this.#updateEmojis(this.#selectedTabKey);
@@ -272,11 +275,6 @@ export class EmojiPickerElement extends HTMLElement {
     if (this.#selectedTabKey) {
       this.#contentElement.scrollTop = 0;
     }
-  }
-
-  #resetSearch() {
-    this.#searchInputElement.focus();
-    this.clearSearch();
   }
 
   #updateTabsAndTitle(tabKey) {
@@ -303,6 +301,30 @@ export class EmojiPickerElement extends HTMLElement {
       this.#titleElement.classList.remove('hidden');
       this.#searchInputElement.classList.add('hidden');
     }
+  }
+
+  #clearSearch() {
+    this.#searchInputElement.value = '';
+    const emojiVisibilityChanges = {
+      visible: Array.from(this.#baseEmojiElements.values()),
+      hidden: [],
+    };
+    this.#renderEmojiVisibilityChanges(emojiVisibilityChanges);
+  }
+
+  #searchEmoji(query) {
+    this.#contentElement.scrollTop = 0;
+    const searchTerms = query.toLowerCase().split(' ');
+    const emojiVisibilityChanges = Array.from(this.#baseEmojiElements.entries()).reduce((acc, [baseEmoji, baseEmojiElement]) => {
+      if (this.#emojiMatchTerms(baseEmoji, searchTerms)) {
+        acc.visible.push(baseEmojiElement)
+      }
+      else {
+        acc.hidden.push(baseEmojiElement)
+      }
+      return acc;
+    }, { visible: [], hidden: [] });
+    this.#renderEmojiVisibilityChanges(emojiVisibilityChanges);
   }
 
   #updateEmojis(tabKey) {
@@ -346,30 +368,20 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   searchEmoji(query) {
+    if (this.#selectedTabKey !== 'search') {
+      return;
+    }
     if (this.#searchInputElement.value !== query) {
       this.#searchInputElement.value = query;
     }
-    this.#contentElement.scrollTop = 0;
-    const searchTerms = query.toLowerCase().split(' ');
-    const emojiVisibilityChanges = Array.from(this.#baseEmojiElements.entries()).reduce((acc, [baseEmoji, baseEmojiElement]) => {
-      if (this.#emojiMatchTerms(baseEmoji, searchTerms)) {
-        acc.visible.push(baseEmojiElement)
-      }
-      else {
-        acc.hidden.push(baseEmojiElement)
-      }
-      return acc;
-    }, { visible: [], hidden: [] });
-    this.#renderEmojiVisibilityChanges(emojiVisibilityChanges);
+    this.#searchEmoji(query)
   }
 
   clearSearch() {
-    this.#searchInputElement.value = '';
-    const emojiVisibilityChanges = {
-      visible: Array.from(this.#baseEmojiElements.values()),
-      hidden: [],
-    };
-    this.#renderEmojiVisibilityChanges(emojiVisibilityChanges);
+    if (this.#selectedTabKey !== 'search') {
+      return;
+    }
+    this.#clearSearch();
   }
 
   #emojiMatchTerms(emoji, searchTerms) {
@@ -519,14 +531,11 @@ export class EmojiPickerElement extends HTMLElement {
   }
 
   #load(entries) {
-    if (this.#firstEmojiElement) {
-      this.#firstEmojiElement.classList.remove('invisible');
-    }
     for (const entry of entries) {
       if (entry.isIntersecting) {
         entry.target.classList.remove('lazy-load');
       }
-      else if (!entry.target.classList.contains('active')) {
+      else if (!entry.target.classList.contains('active') && !entry.target.classList.contains('hidden')) {
         entry.target.classList.add('lazy-load');
       }
     }
