@@ -112,7 +112,7 @@ export class EmojiPickerElement extends HTMLElement {
       const tabContent = emojiTabTemplate.content.cloneNode(true);
       const tabElement = tabContent.querySelector('.tab');
       this.#tabElements.set(tabKey, tabElement);
-      const tabButton = tabContent.querySelector('.button');
+      const tabButton = tabContent.querySelector('button');
       tabButton.innerHTML = tab.emoji;
       tabButton.setAttribute('title', tab.title);
       tabButton.addEventListener('click', () => {
@@ -167,7 +167,7 @@ export class EmojiPickerElement extends HTMLElement {
         }
       }
     }, { passive: true });
-    const baseEmojiButton = baseEmojiContent.querySelector('.button');
+    const baseEmojiButton = baseEmojiContent.querySelector('button');
     baseEmojiButton.innerHTML = baseEmoji.emoji;
     baseEmojiButton.setAttribute('title', baseEmoji.description);
     baseEmojiButton.addEventListener('click', () => {
@@ -198,7 +198,7 @@ export class EmojiPickerElement extends HTMLElement {
   #buildEmojiVariation(baseEmojiElement, emojiVariation) {
     const emojiVariationContent = emojiVariationTemplate.content.cloneNode(true);
     const emojiVariationElement = emojiVariationContent.querySelector('.emoji');
-    const emojiVariationButton = emojiVariationContent.querySelector('.button');
+    const emojiVariationButton = emojiVariationContent.querySelector('button');
     emojiVariationButton.innerHTML = emojiVariation.emoji;
     emojiVariationButton.setAttribute('title', emojiVariation.description);
     emojiVariationButton.addEventListener('click', () => {
@@ -220,11 +220,11 @@ export class EmojiPickerElement extends HTMLElement {
         const tabElement = this.#tabElements.get(tabKey);
         if (translation[tabKey].emoji) {
           tab.emoji = translation[tabKey].emoji;
-          tabElement.querySelector('.button').innerHTML = tab.emoji;
+          tabElement.querySelector('button').innerHTML = tab.emoji;
         }
         if (translation[tabKey].title) {
           tab.title = translation[tabKey].title;
-          tabElement.querySelector('.button').setAttribute('title', tab.title);
+          tabElement.querySelector('button').setAttribute('title', tab.title);
         }
       }
     }

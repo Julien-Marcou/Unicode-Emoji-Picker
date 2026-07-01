@@ -72,7 +72,7 @@
 }
 
 /* Default button style */
-.button {
+button {
   cursor: pointer;
   padding: 0;
   border: 0 none;
@@ -83,7 +83,7 @@
   font-family: var(--emoji-font-family);
   background-color: transparent;
 }
-.button::-moz-focus-inner {
+button::-moz-focus-inner {
   border: 0 none;
 }
 
@@ -172,7 +172,7 @@
   left: 0;
   right: auto;
 }
-.tab .button {
+.tab button {
   display: block;
   overflow: hidden;
   height: var(--tab-size);
@@ -181,8 +181,8 @@
   text-align: center;
   transition: background-color var(--transition);
 }
-.tab .button:hover,
-.tab .button:focus-visible {
+.tab button:hover,
+.tab button:focus-visible {
   background-color: var(--tab-fill-color-hover);
 }
 
@@ -285,7 +285,7 @@
   contain: strict;
   contain-intrinsic-size: var(--emoji-size) var(--emoji-size);
 }
-.emoji > .button {
+.emoji > button {
   display: block;
   overflow: hidden;
   width: 100%;
@@ -294,8 +294,8 @@
   border-radius: 8px;
   text-align: center;
 }
-.emoji > .button:hover,
-.emoji > .button:focus-visible {
+.emoji > button:hover,
+.emoji > button:focus-visible {
   border-color: var(--emoji-border-color-hover);
 }
 .emoji.hidden {
@@ -316,12 +316,12 @@
 .emoji.with-variations {
   position: relative;
 }
-.emoji.with-variations > .button {
+.emoji.with-variations > button {
   border-bottom-right-radius: 0;
 }
 
 /* Emoji variations marker */
-.emoji.with-variations > .button:after {
+.emoji.with-variations > button:after {
   box-sizing: border-box;
   pointer-events: none;
   content: '';
@@ -335,8 +335,8 @@
   border-top: 0 none;
   border-left: 0 none;
 }
-.emoji.with-variations > .button:hover:after,
-.emoji.with-variations > .button:focus-visible:after {
+.emoji.with-variations > button:hover:after,
+.emoji.with-variations > button:focus-visible:after {
   border-color: var(--emoji-variation-marker-color-hover);
 }
 
