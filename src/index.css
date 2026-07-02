@@ -65,6 +65,9 @@
   height: calc((var(--emoji-size) + var(--emojis-gap)) * var(--max-emoji-row-count) + var(--horizontal-tabs-height) + var(--title-bar-height));
   max-height: 100vh;
 }
+:host([hidden]) {
+  display: none;
+}
 :host([tabs-position="left"]),
 :host([tabs-position="right"]) {
   --horizontal-tabs-height: 0px;
