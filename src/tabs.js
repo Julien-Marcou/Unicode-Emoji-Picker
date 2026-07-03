@@ -9,21 +9,21 @@ export const TABS = [
   [
     'face-emotion',
     {
-      emoji: '😀️',
+      emoji: '😀',
       title: 'Smileys & Emotion',
     },
   ],
   [
     'food-drink',
     {
-      emoji: '🥕️',
+      emoji: '🥕',
       title: 'Food & Drink',
     },
   ],
   [
     'animals-nature',
     {
-      emoji: '🦜️',
+      emoji: '🦜',
       title: 'Nature & Animals',
     },
   ],
@@ -37,7 +37,7 @@ export const TABS = [
   [
     'person-people',
     {
-      emoji: '🧍️',
+      emoji: '🧍',
       title: 'People',
     },
   ],
@@ -58,7 +58,7 @@ export const TABS = [
   [
     'symbols',
     {
-      emoji: '💬️',
+      emoji: '💬',
       title: 'Symbols',
     },
   ],

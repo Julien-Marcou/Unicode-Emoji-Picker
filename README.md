@@ -268,15 +268,15 @@ whenUnicodeEmojiPickerDefined().then(() => {
       inputPlaceholder: 'Search an Emoji...',
     },
     'face-emotion': {
-      emoji: '😀️',
+      emoji: '😀',
       title: 'Smileys & Emotion',
     },
     'food-drink': {
-      emoji: '🥕️',
+      emoji: '🥕',
       title: 'Food & Drink',
     },
     'animals-nature': {
-      emoji: '🦜️',
+      emoji: '🦜',
       title: 'Nature & Animals',
     },
     'activities-events': {
@@ -296,7 +296,7 @@ whenUnicodeEmojiPickerDefined().then(() => {
       title: 'Clothing & Objects',
     },
     'symbols': {
-      emoji: '💬️',
+      emoji: '💬',
       title: 'Symbols',
     },
     'flags': {
