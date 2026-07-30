@@ -27,13 +27,12 @@
   "type": "module",
   "license": "MIT",
   "dependencies": {
-    "scrollable-component": "^2.0.3",
+    "scrollable-component": "^2.0.4",
     "unicode-emoji": "^2.8.0"
   },
   "devDependencies": {
     "csso": "^5.0.5",
     "esbuild": "^0.28.1",
-    "html-minifier-terser": "^7.2.0",
-    "terser": "^5.48.0"
+    "html-minifier-terser": "^7.2.0"
   }
 }
