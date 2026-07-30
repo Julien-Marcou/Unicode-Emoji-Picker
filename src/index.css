@@ -4,16 +4,16 @@
 
 :host {
   --tabs-border-width: 1px;
-  --tabs-padding: 0.5em;
-  --tabs-gap: 0.2em;
+  --tabs-padding: round(0.5em, 1px);
+  --tabs-gap: round(0.2em, 1px);
   --tab-size: 2em;
 
   --title-bar-height: 3em;
-  --title-bar-padding: 1.1em;
+  --title-bar-padding: round(1.1em, 1px);
 
-  --emojis-padding: 0.8em;
-  --emojis-gap: 0.2em;
-  --emoji-size: 1.85em;
+  --emojis-padding: round(0.8em, 1px);
+  --emojis-gap: round(0.2em, 1px);
+  --emoji-size: round(1.85em, 1px);
   --min-emoji-col-count: 6;
   --max-emoji-col-count: 11;
   --min-emoji-row-count: 4;
@@ -154,16 +154,16 @@ button::-moz-focus-inner {
   content: "";
   display: block;
   position: absolute;
-  left: -0.1em;
-  right: -0.1em;
+  left: round(-0.1em, 1px);
+  right: round(-0.1em, 1px);
   bottom: 0;
   height: 4px;
   background-color: var(--tab-active-marker-color);
 }
 :host([tabs-position="left"]) .tab.active:after,
 :host([tabs-position="right"]) .tab.active:after {
-  top: -0.1em;
-  bottom: -0.1em;
+  top: round(-0.1em, 1px);
+  bottom: round(-0.1em, 1px);
   height: auto;
   width: 4px;
 }
@@ -243,11 +243,11 @@ button::-moz-focus-inner {
   display: block;
   width: 100%;
   margin: 0;
-  padding: 0.35em 0.4em 0.55em;
+  padding: round(0.35em, 1px) round(0.4em, 1px) round(0.55em, 1px);
   color: inherit;
   font: inherit;
   font-size: 0.85em;
-  line-height: 1.6em;
+  line-height: round(1.6em, 1px);
   text-overflow: ellipsis;
   border: 0 solid var(--search-input-border-color);
   border-bottom-width: 4px;
